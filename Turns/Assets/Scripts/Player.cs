@@ -6,28 +6,53 @@ using UnityEngine;
 
 public class Player : Singleton<Player>
 {
-    private Vector3Int _direction = VectorInt.forward;
-    private Rigidbody _rb;
-    private Transform _tr;
-    private Vector3Int? _currentTilePosition = Vector3Int.zero;
+    bool _isCurrentlyDieing;
+    Vector3Int _direction = VectorInt.forward;
+    Rigidbody _rb;
+    Transform _tr;
+    Vector3Int? _currentTilePosition = Vector3Int.zero;
+
+    float _dieingInertia = 1;
+    float _startDieTime;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
         _tr = transform;
+        _dieingInertia = 1;
     }
 
     private void FixedUpdate()
     {
-        if (!Game.Instance.GameStarted)
+        if (!Game.Instance.GameStarted && !_isCurrentlyDieing)
         {
             return;
         }
 
+        if (_isCurrentlyDieing)
+        {
+            if (_dieingInertia > 0.001f)
+            {
+                _dieingInertia *= 0.9f;
+
+            }
+        }
+
+        if (Time.unscaledTime - _startDieTime > 4)
+        {
+            _isCurrentlyDieing = false;
+        }
+
+
         _rb.MovePosition(_tr.localPosition +
                          new Vector3(_direction.x * Speed, _direction.y * Speed, _direction.z * Speed));
-        
+
         CheckTilePosition();
+    }
+
+    public void Reset()
+    {
+        _isCurrentlyDieing = false;
     }
 
     public void ChangeDirection()
@@ -43,7 +68,6 @@ public class Player : Singleton<Player>
                 {
                     _direction =
                         FloorManager.Instance.GetNextPathChangeDirection(_currentTilePosition.Value, _direction);
-                    // end game?
                 }
                 else
                 {
@@ -53,9 +77,15 @@ public class Player : Singleton<Player>
         }
     }
 
+    public void SlowDownAndDie()
+    {
+        _startDieTime = Time.unscaledTime;
+        _isCurrentlyDieing = true;
+    }
+
     float Speed
     {
-        get { return 1 / Game.Instance.InitialTilePassTime * Time.fixedDeltaTime; }
+        get { return (1 / Game.Instance.InitialTilePassTime * Time.fixedDeltaTime) * _dieingInertia; }
     }
 
     void CheckTilePosition()
@@ -70,5 +100,13 @@ public class Player : Singleton<Player>
         }
 
         _currentTilePosition = tilePosition;
+        
+        var tile = FloorManager.Instance.PeekTile(_currentTilePosition.Value);
+
+        if (tile == null && Game.Instance.GameStarted)
+        {
+            Game.Instance.PlayerDie();
+        }   
+         
     }
 }

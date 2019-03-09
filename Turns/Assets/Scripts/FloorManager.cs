@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Gamelogic.Extensions;
 using UnityEngine;
 
@@ -65,14 +64,12 @@ public class FloorManager : Singleton<FloorManager>
         }
 
         _nextTilePosition += _currentDirection;
-
     }
 
 
 
     public FloorTile AppearNewTile()
     {
-
         var tile = PoolManager.Instance.TilesPool.Spawn(_nextTilePosition, Quaternion.identity, tilesHolder)
             .GetComponent<FloorTile>();
 
@@ -124,10 +121,17 @@ public class FloorManager : Singleton<FloorManager>
             {
                 return direction.Value;
             }
+            
+            if(Game.Instance.GameStarted)
+            {
+                // if first current tile is not the corner, player dies
+                Game.Instance.PlayerDie();
+            }
 
             tile = tile.Next;
         }
 
+        Game.Instance.PlayerDie();
         return currentDirection.GetChangedRandomDirection();
     }
 }
