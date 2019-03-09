@@ -57,25 +57,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Menu\Editor\GLMenu.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\GLEditorGUI.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\GLMonoBehaviourEditor.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\GLSerializedProperty.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\EditorUtils.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\GLEditor.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\StringExtensions.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\CommentPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\DummyPorpertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\HighlightPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\InspectorFlagsPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\InspectorListPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\LabelFieldPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\MinMaxFloatPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\NonNegativePropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\OptionalPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\PositivePropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\ReadonlyPropertyDrawer.cs" />
-    <Compile Include="Assets\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\WarningIfNullPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Menu\Editor\GLMenu.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\GLEditorGUI.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\GLMonoBehaviourEditor.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\GLSerializedProperty.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\EditorUtils.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\GLEditor.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\Internal\StringExtensions.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\CommentPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\DummyPorpertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\HighlightPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\InspectorFlagsPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\InspectorListPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\LabelFieldPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\MinMaxFloatPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\NonNegativePropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\OptionalPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\PositivePropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\ReadonlyPropertyDrawer.cs" />
+    <Compile Include="Assets\Packs\Gamelogic\Extensions\Plugins\Scripts\Editor\PropertyDrawers\WarningIfNullPropertyDrawer.cs" />
     <Compile Include="Assets\Packs\Lean\Pool\Editor\LeanDocumentation.cs" />
     <Compile Include="Assets\Packs\Lean\Pool\Editor\LeanGameObjectPool_Editor.cs" />
     <Reference Include="Unity.TextMeshPro.Editor">
@@ -347,6 +347,12 @@
     </Reference>
     <Reference Include="UnityEditor.Purchasing">
       <HintPath>D:/Projects/Turns/Turns/Library/PackageCache/com.unity.purchasing@2.0.3/Editor/UnityEditor.Purchasing.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTweenEditor">
+      <HintPath>D:/Projects/Turns/Turns/Assets/Packs/Demigiant/DOTween/Editor/DOTweenEditor.dll</HintPath>
+    </Reference>
+    <Reference Include="DOTween">
+      <HintPath>D:/Projects/Turns/Turns/Assets/Packs/Demigiant/DOTween/DOTween.dll</HintPath>
     </Reference>
     <Reference Include="mscorlib">
       <HintPath>D:/programe/Unity/2018.3.6f1/Editor/Data/MonoBleedingEdge/lib/mono/4.7.1-api/mscorlib.dll</HintPath>
