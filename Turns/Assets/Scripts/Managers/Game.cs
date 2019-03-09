@@ -8,28 +8,32 @@ using UnityEngine.Serialization;
 public class Game : Singleton<Game>
 {
     public CameraFollow cameraFollow;
-    public bool GameStarted { get; private set; }
+    public bool PlayerRunning { get; private set; }
     // time player takes to pass a tile
-    public float InitialTilePassTime = 0.4f;    
+    public float initialTilePassTime = 0.4f;    
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1;
     public int PathChangeProbability = 7;
+    public int MaxStage = 10;
+    public int TilesInStage = 4;
     public int MovesMade { get; private set; }
-
-    public float StartTime;
     
+    float _startTime;
+    int stage = 0;
+
+    public float TilePassTime => Mathf.Lerp(0.1f, initialTilePassTime, (MaxStage - stage) / (float)MaxStage);
 
     public void Reset()
     {
-        GameStarted = false;
+        PlayerRunning = false;
         MovesMade = 0;
+        stage = 0;
     }
 
     public void Play()
     {
-        MovesMade = 0;        
+        Reset();        
         Player.Instance.Reset();
-        cameraFollow.Reset();
         
         StartCoroutine(BeginAfterCountdown());
     }
@@ -39,24 +43,26 @@ public class Game : Singleton<Game>
         FloorManager.Instance.ResetAndPlay();
         Player.Instance.Play();
         yield return new WaitForSeconds(0.6f);
-        GameStarted = true;
-        StartTime = Time.fixedTime;
+        PlayerRunning = true;
+        _startTime = Time.fixedTime;
     }
 
     public void UserTap()
     {
-        if (Game.Instance.GameStarted)
+        if (Game.Instance.PlayerRunning)
         {
             Player.Instance.ChangeDirection();
             MovesMade++;
-            GameManager.Instance.DisplayMoves();
+            GameManager.Instance.UpdateUI();
+            stage = MovesMade / TilesInStage;
+            
+            Debug.Log("staeg"+ stage+" sped "+Game.Instance.TilePassTime);
         }
     }
     
     public void PlayerDie()
     {
-        Debug.Log("dieded");
-        GameStarted = false;
+        PlayerRunning = false;
         Player.Instance.SlowDownAndDie();
         GameManager.Instance.GameOver();
     }

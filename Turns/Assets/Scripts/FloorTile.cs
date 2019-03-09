@@ -8,10 +8,12 @@ public class FloorTile : MonoBehaviour
 {
     public Vector3Int PositionKey;
     public Vector3Int? NextPositionKey;
-    public float appearDuration = 0.4f;
+
+
+    float appearDuration => Game.Instance.TilePassTime * 1.5f;
    
 
-    public void Dissapear()
+     public void Dissapear()
     {
         DOTween.Sequence()
             .Append(transform.DOScale(0, appearDuration))

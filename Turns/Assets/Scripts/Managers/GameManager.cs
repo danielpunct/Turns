@@ -12,10 +12,10 @@ public class GameManager : Singleton<GameManager>
     {
         Game.Instance.Reset();
         Menu.Instance.Show();
-        DisplayMoves();
+        UpdateUI();
     }
 
-    public void DisplayMoves()
+    public void UpdateUI()
     {
         movesText.text = "Moves made: " + Game.Instance.MovesMade.ToString();
     }
@@ -24,7 +24,7 @@ public class GameManager : Singleton<GameManager>
     {
         Game.Instance.Play();
         Menu.Instance.Hide();
-        DisplayMoves();
+        UpdateUI();
     }
 
     public void GameOver()

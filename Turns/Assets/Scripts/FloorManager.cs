@@ -11,9 +11,11 @@ public class FloorManager : Singleton<FloorManager>
     LinkedList<FloorTile> _tiles;
     Vector3Int _nextTilePosition = Vector3Int.zero;
     Vector3Int _currentDirection = VectorInt.forward;
+    int passTileBufffer;
 
     public void ResetAndPlay()
     {
+        passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
         _currentDirection = VectorInt.forward;
         StartCoroutine(InitialSetup());
@@ -36,7 +38,7 @@ public class FloorManager : Singleton<FloorManager>
 
     public void OnPlayerPassedTile()
     {
-        if (Game.Instance.PlayerPassTilesBuffer-- > 0)
+        if (passTileBufffer-- > 0)
         {
             return;
         }
@@ -54,21 +56,18 @@ public class FloorManager : Singleton<FloorManager>
         SetNextPosition(false);
     }
 
-
     public void SetNextPosition(bool init)
     {
         if (!init)
         {
             if (Random.Range(0, Game.Instance.PathChangeProbability) == 0) // if change direction
             {
-                _currentDirection = _currentDirection.GetChangedRandomDirection();
+                _currentDirection = GetChangedRandomDirection( _currentDirection, _tiles.Last.Value.PositionKey);
             }
         }
 
         _nextTilePosition += _currentDirection;
     }
-
-
 
     public FloorTile AppearNewTile()
     {
@@ -107,6 +106,32 @@ public class FloorManager : Singleton<FloorManager>
         return !_tilesDict.ContainsKey(atPosition) ? null : _tilesDict[atPosition];
     }
 
+    Vector3Int GetChangedRandomDirection(Vector3Int dir, Vector3Int? fromPosition = null)
+    {
+        if (dir == Vector3.forward || dir == Vector3.back)
+        {
+            return Random.Range(0, 2) > 0 ? Vector3Int.left : Vector3Int.right;
+        }
+        else
+        {
+            return Random.Range(0, 2) > 0 ? VectorInt.forward : VectorInt.back;
+        }
+    }
+
+    bool IsSafeDirection(Vector3Int fromPosition, Vector3Int inDirection)
+    {
+        for (int i = 1; i <= Game.Instance.InitialTiles * 2 / 3; i++)
+        {
+            if (_tilesDict.ContainsKey(fromPosition + inDirection * i))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    
     public Vector3Int GetNextPathChangeDirection(Vector3Int fromPositionKey, Vector3Int currentDirection)
     {
         var tile = _tiles.Find(_tilesDict[fromPositionKey]);
@@ -124,7 +149,7 @@ public class FloorManager : Singleton<FloorManager>
                 return direction.Value;
             }
             
-            if(Game.Instance.GameStarted)
+            if(Game.Instance.PlayerRunning)
             {
                 // if first current tile is not the corner, player dies
                 Game.Instance.PlayerDie();
@@ -134,6 +159,6 @@ public class FloorManager : Singleton<FloorManager>
         }
 
         Game.Instance.PlayerDie();
-        return currentDirection.GetChangedRandomDirection();
+        return GetChangedRandomDirection(currentDirection);
     }
 }

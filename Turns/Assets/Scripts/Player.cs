@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class Player : Singleton<Player>
 {
-    public bool IsCurrentlyDieing { get; private set; }
+    public bool IsFalling { get; private set; }
     Vector3Int _direction = VectorInt.forward;
     Rigidbody _rb;
     Transform _tr;
@@ -25,12 +25,12 @@ public class Player : Singleton<Player>
 
     private void FixedUpdate()
     {
-        if (!Game.Instance.GameStarted && !IsCurrentlyDieing)
+        if (!Game.Instance.PlayerRunning && !IsFalling)
         {
             return;
         }
 
-        if (IsCurrentlyDieing)
+        if (IsFalling)
         {
             if (_dieingInertia > 0.001f)
             {
@@ -39,16 +39,15 @@ public class Player : Singleton<Player>
             }
         }
 
-        if (IsCurrentlyDieing && Time.unscaledTime - _startDieTime > 4)
+        if (IsFalling && Time.unscaledTime - _startDieTime > 4)
         {
            Reset();
         }
 
-
         _rb.MovePosition(_tr.localPosition +
                          new Vector3(_direction.x * Speed, _direction.y * Speed, _direction.z * Speed));
 
-        if (!IsCurrentlyDieing)
+        if (!IsFalling)
         {
             CheckTilePosition();
         }
@@ -58,8 +57,8 @@ public class Player : Singleton<Player>
     {
         _rb.isKinematic = true;
         _tr.localScale = Vector3.zero;
-        _tr.localPosition = Vector3.up;
-        IsCurrentlyDieing = false;
+        _tr.localPosition = Vector3.up * 2f;
+        IsFalling = false;
         _currentTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
         _rb.rotation = Quaternion.identity;
@@ -99,12 +98,12 @@ public class Player : Singleton<Player>
     public void SlowDownAndDie()
     {
         _startDieTime = Time.unscaledTime;
-        IsCurrentlyDieing = true;
+        IsFalling = true;
     }
 
     float Speed
     {
-        get { return (1 / Game.Instance.InitialTilePassTime * Time.fixedDeltaTime) * _dieingInertia; }
+        get { return (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime) * _dieingInertia; }
     }
 
     void CheckTilePosition()
@@ -122,7 +121,7 @@ public class Player : Singleton<Player>
         
         var tile = FloorManager.Instance.PeekTile(_currentTilePosition.Value);
 
-        if (tile == null && Game.Instance.GameStarted)
+        if (tile == null && Game.Instance.PlayerRunning)
         {
             Game.Instance.PlayerDie();
         }   

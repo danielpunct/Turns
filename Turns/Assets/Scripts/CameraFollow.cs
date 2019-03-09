@@ -6,14 +6,9 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform player;
 
-    public void Reset()
-    {
-        transform.position = player.position;
-    }
-    
     void Update()
     {
-        if (Game.Instance.GameStarted && !Player.Instance.IsCurrentlyDieing)
+        if (!Player.Instance.IsFalling)
         {
             transform.position = player.position;
         }

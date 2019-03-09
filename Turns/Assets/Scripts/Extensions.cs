@@ -22,15 +22,5 @@ using UnityEngine;
             }
         }
         
-        public static Vector3Int GetChangedRandomDirection(this Vector3Int dir)
-        {
-            if (dir == Vector3.forward || dir == Vector3.back)
-            {
-                return Random.Range(0, 2) > 0 ? Vector3Int.left : Vector3Int.right;
-            }
-            else
-            {
-                return Random.Range(0, 2) > 0 ? VectorInt.forward : VectorInt.back;
-            }
-        }
+       
     }
