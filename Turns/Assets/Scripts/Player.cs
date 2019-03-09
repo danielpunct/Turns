@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using Gamelogic.Extensions;
 using TMPro;
 using UnityEngine;
 
 public class Player : Singleton<Player>
 {
-    bool _isCurrentlyDieing;
+    public bool IsCurrentlyDieing { get; private set; }
     Vector3Int _direction = VectorInt.forward;
     Rigidbody _rb;
     Transform _tr;
@@ -24,12 +25,12 @@ public class Player : Singleton<Player>
 
     private void FixedUpdate()
     {
-        if (!Game.Instance.GameStarted && !_isCurrentlyDieing)
+        if (!Game.Instance.GameStarted && !IsCurrentlyDieing)
         {
             return;
         }
 
-        if (_isCurrentlyDieing)
+        if (IsCurrentlyDieing)
         {
             if (_dieingInertia > 0.001f)
             {
@@ -38,21 +39,39 @@ public class Player : Singleton<Player>
             }
         }
 
-        if (Time.unscaledTime - _startDieTime > 4)
+        if (IsCurrentlyDieing && Time.unscaledTime - _startDieTime > 4)
         {
-            _isCurrentlyDieing = false;
+           Reset();
         }
 
 
         _rb.MovePosition(_tr.localPosition +
                          new Vector3(_direction.x * Speed, _direction.y * Speed, _direction.z * Speed));
 
-        CheckTilePosition();
+        if (!IsCurrentlyDieing)
+        {
+            CheckTilePosition();
+        }
     }
 
     public void Reset()
     {
-        _isCurrentlyDieing = false;
+        _rb.isKinematic = true;
+        _tr.localScale = Vector3.zero;
+        _tr.localPosition = Vector3.up;
+        IsCurrentlyDieing = false;
+        _currentTilePosition = Vector3Int.zero;
+        _rb.velocity = Vector3.zero;
+        _rb.rotation = Quaternion.identity;
+        _tr.rotation = Quaternion.identity;
+        _dieingInertia = 1;
+        _direction = VectorInt.forward;
+    }
+
+    public void Play()
+    {
+        _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack);
+        _rb.isKinematic = false;
     }
 
     public void ChangeDirection()
@@ -80,7 +99,7 @@ public class Player : Singleton<Player>
     public void SlowDownAndDie()
     {
         _startDieTime = Time.unscaledTime;
-        _isCurrentlyDieing = true;
+        IsCurrentlyDieing = true;
     }
 
     float Speed

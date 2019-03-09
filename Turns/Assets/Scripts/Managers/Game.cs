@@ -7,38 +7,50 @@ using UnityEngine.Serialization;
 
 public class Game : Singleton<Game>
 {
+    public CameraFollow cameraFollow;
     public bool GameStarted { get; private set; }
     // time player takes to pass a tile
     public float InitialTilePassTime = 0.4f;    
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1;
     public int PathChangeProbability = 7;
+    public int MovesMade { get; private set; }
 
     public float StartTime;
     
-    // Start is called before the first frame update
-    void Start()
+
+    public void Reset()
     {
-        Reset();
+        GameStarted = false;
+        MovesMade = 0;
     }
 
-    void Reset()
+    public void Play()
     {
+        MovesMade = 0;        
         Player.Instance.Reset();
-        GameStarted = false;
+        cameraFollow.Reset();
+        
         StartCoroutine(BeginAfterCountdown());
     }
 
     IEnumerator BeginAfterCountdown()
     {
-        yield return new WaitForSeconds(1);
+        FloorManager.Instance.ResetAndPlay();
+        Player.Instance.Play();
+        yield return new WaitForSeconds(0.6f);
         GameStarted = true;
         StartTime = Time.fixedTime;
     }
 
     public void UserTap()
     {
-        Player.Instance.ChangeDirection();
+        if (Game.Instance.GameStarted)
+        {
+            Player.Instance.ChangeDirection();
+            MovesMade++;
+            GameManager.Instance.DisplayMoves();
+        }
     }
     
     public void PlayerDie()
@@ -46,5 +58,6 @@ public class Game : Singleton<Game>
         Debug.Log("dieded");
         GameStarted = false;
         Player.Instance.SlowDownAndDie();
+        GameManager.Instance.GameOver();
     }
 }

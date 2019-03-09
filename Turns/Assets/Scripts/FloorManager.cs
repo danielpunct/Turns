@@ -12,14 +12,16 @@ public class FloorManager : Singleton<FloorManager>
     Vector3Int _nextTilePosition = Vector3Int.zero;
     Vector3Int _currentDirection = VectorInt.forward;
 
-    // Start is called before the first frame update
-    void Start()
+    public void ResetAndPlay()
     {
+        _nextTilePosition = Vector3Int.zero;
+        _currentDirection = VectorInt.forward;
         StartCoroutine(InitialSetup());
     }
 
     IEnumerator InitialSetup()
     {
+        PoolManager.Instance.TilesPool.DespawnAll();
         _tiles = new LinkedList<FloorTile>();
         _tilesDict = new Dictionary<Vector3Int, FloorTile>();
 
