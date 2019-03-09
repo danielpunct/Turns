@@ -1,0 +1,10 @@
+Turns/Library/*
+Turns/Temp/*
+Turns/obj/*
+builds/*
+out/*
+ress/*
+Turns/.vs/*
+Turns/etc/*
+Turns/Logs/*
+Turns/.vscode/*
