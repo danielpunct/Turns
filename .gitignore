@@ -10,3 +10,4 @@ Turns/Logs/*
 Turns/.vscode/*
 Turns/.idea/.idea.Turns/.idea/workspace.xml
 Turns/.idea/.idea.Turns/.idea/contentModel.xml
+*.csproj

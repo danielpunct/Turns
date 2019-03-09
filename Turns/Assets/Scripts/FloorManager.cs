@@ -7,9 +7,11 @@ using UnityEngine;
 public class FloorManager : Singleton<FloorManager>
 {
     public Transform tilesHolder;
-    
-    Queue<FloorTile> tiles;
-    Vector3 nextTilePosition = new Vector3(0, 0, 0);
+
+    Dictionary<Vector3Int, FloorTile> _tilesDict;
+    LinkedList<FloorTile> _tiles;
+    Vector3Int _nextTilePosition = Vector3Int.zero;
+    Vector3Int _currentDirection = VectorInt.forward;
 
     // Start is called before the first frame update
     void Start()
@@ -19,13 +21,14 @@ public class FloorManager : Singleton<FloorManager>
 
     IEnumerator InitialSetup()
     {
-        tiles = new Queue<FloorTile>();
+        _tiles = new LinkedList<FloorTile>();
+        _tilesDict = new Dictionary<Vector3Int, FloorTile>();
 
         for (int i = 0; i < Game.Instance.InitialTiles; i++)
         {
             AppearNewTile();
-            SetNextPosition(Vector3.forward);
-            
+            SetNextPosition(true);
+
             yield return new WaitForSeconds(0.1f);
         }
     }
@@ -36,33 +39,95 @@ public class FloorManager : Singleton<FloorManager>
         {
             return;
         }
-        if (tiles == null || tiles.Count < Game.Instance.InitialTiles)
+
+        if (_tiles == null || _tiles.Count < Game.Instance.InitialTiles)
         {
             return;
         }
-        var lastTile = tiles.Dequeue();
-        
-        lastTile.Dissapear();
-        
-        AppearNewTile();
-        SetNextPosition(Vector3.forward);
-    }
-    
 
-    public void SetNextPosition(Vector3 direction)
-    {
-        nextTilePosition += direction;
+        var lastTile = DeregisterFirstTile();
+
+        lastTile.Dissapear();
+
+        AppearNewTile();
+        SetNextPosition(false);
     }
+
+
+    public void SetNextPosition(bool init)
+    {
+        if (!init)
+        {
+            if (Random.Range(0, Game.Instance.PathChangeProbability) == 0) // if change direction
+            {
+                _currentDirection = _currentDirection.GetChangedRandomDirection();
+            }
+        }
+
+        _nextTilePosition += _currentDirection;
+
+    }
+
+
 
     public FloorTile AppearNewTile()
     {
-        var tile = PoolManager.Instance.TilesPool.Spawn(nextTilePosition, Quaternion.identity, tilesHolder)
-            .GetComponent<FloorTile>();
-        tile.Appear();
-        
-        tiles.Enqueue(tile);
 
-        
+        var tile = PoolManager.Instance.TilesPool.Spawn(_nextTilePosition, Quaternion.identity, tilesHolder)
+            .GetComponent<FloorTile>();
+
+        tile.Appear();
+
+        RegisterLastTile(tile, _nextTilePosition);
+
         return tile;
+    }
+
+    void RegisterLastTile(FloorTile tile, Vector3Int atPosition)
+    {
+        tile.PositionKey = atPosition;
+        if (_tiles.Count > 0)
+        {
+            _tiles.Last.Value.NextPositionKey = atPosition;
+        }
+
+        _tiles.AddLast(tile);
+        _tilesDict.Add(atPosition, tile);
+    }
+
+    FloorTile DeregisterFirstTile()
+    {
+        var lastTile = _tiles.First.Value;
+        _tiles.RemoveFirst();
+        _tilesDict.Remove(lastTile.PositionKey);
+        return lastTile;
+    }
+
+    public FloorTile PeekTile(Vector3Int atPosition)
+    {
+        return !_tilesDict.ContainsKey(atPosition) ? null : _tilesDict[atPosition];
+    }
+
+    public Vector3Int GetNextPathChangeDirection(Vector3Int fromPositionKey, Vector3Int currentDirection)
+    {
+        var tile = _tiles.Find(_tilesDict[fromPositionKey]);
+
+        while (tile != null)
+        {
+            if (tile.Value.NextPositionKey == null)
+            {
+                break;
+            }
+            var direction = tile.Value.NextPositionKey - tile.Value.PositionKey;         
+
+            if (direction.Value != currentDirection)
+            {
+                return direction.Value;
+            }
+
+            tile = tile.Next;
+        }
+
+        return currentDirection.GetChangedRandomDirection();
     }
 }

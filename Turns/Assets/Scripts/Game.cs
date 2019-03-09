@@ -11,6 +11,7 @@ public class Game : Singleton<Game>
     public float InitialTilePassTime = 0.4f;    
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1;
+    public int PathChangeProbability = 7;
 
     public float StartTime;
     
@@ -25,5 +26,10 @@ public class Game : Singleton<Game>
         yield return new WaitForSeconds(1);
         GameStarted = true;
         StartTime = Time.fixedTime;
+    }
+
+    public void UserTap()
+    {
+        Player.Instance.ChangeDirection();
     }
 }

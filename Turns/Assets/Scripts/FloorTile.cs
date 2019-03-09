@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class FloorTile : MonoBehaviour
 {
+    public Vector3Int PositionKey;
+    public Vector3Int? NextPositionKey;
     public float appearDuration = 0.4f;
    
 
@@ -17,6 +20,7 @@ public class FloorTile : MonoBehaviour
 
     public void Appear()
     {
+        NextPositionKey = null;
         transform.localScale = Vector3.zero;
         transform.DOScale(1, appearDuration);
     }
