@@ -7,6 +7,7 @@ using UnityEngine;
 
 public class Player : Singleton<Player>
 {
+    public GameObject apearParticleSystem;
     public bool IsFalling { get; private set; }
     Vector3Int _direction = VectorInt.forward;
     Rigidbody _rb;
@@ -15,6 +16,7 @@ public class Player : Singleton<Player>
 
     float _dieingInertia = 1;
     float _startDieTime;
+    Sequence appearSequence;
 
     private void Awake()
     {
@@ -66,11 +68,22 @@ public class Player : Singleton<Player>
         _dieingInertia = 1;
         _direction = VectorInt.forward;
         _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        apearParticleSystem.SetActive(false);
     }
 
     public void Play()
     {
-        _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack);
+        if (appearSequence != null)
+        {
+            appearSequence.Kill();
+        }
+
+        appearSequence = DOTween.Sequence()
+            .Insert(0,_tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
+            .InsertCallback(0.2f, () =>
+            {
+                apearParticleSystem.SetActive(true);
+            });
         _rb.isKinematic = false;
     }
 
