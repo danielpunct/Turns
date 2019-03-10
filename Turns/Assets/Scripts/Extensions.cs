@@ -21,6 +21,8 @@ using UnityEngine;
                 return new Vector3Int(0,0,-1);
             }
         }
-        
-       
+
+        public static Vector3Int[] Directions = {Vector3Int.right, VectorInt.forward, Vector3Int.left, VectorInt.back};
+
+
     }

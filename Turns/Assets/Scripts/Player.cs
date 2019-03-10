@@ -65,6 +65,7 @@ public class Player : Singleton<Player>
         _tr.rotation = Quaternion.identity;
         _dieingInertia = 1;
         _direction = VectorInt.forward;
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     public void Play()
@@ -98,6 +99,8 @@ public class Player : Singleton<Player>
     public void SlowDownAndDie()
     {
         _startDieTime = Time.unscaledTime;
+        
+        _rb.constraints =RigidbodyConstraints.None;
         IsFalling = true;
     }
 

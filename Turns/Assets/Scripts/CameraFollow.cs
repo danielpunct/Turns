@@ -6,11 +6,11 @@ public class CameraFollow : MonoBehaviour
 {
     public Transform player;
 
-    void Update()
+    void FixedUpdate()
     {
         if (!Player.Instance.IsFalling)
         {
-            transform.position = player.position;
+            transform.position = Vector3.Lerp(transform.position, player.position, Time.fixedDeltaTime * 3);
         }
     }
 }

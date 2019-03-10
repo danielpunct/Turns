@@ -55,8 +55,6 @@ public class Game : Singleton<Game>
             MovesMade++;
             GameManager.Instance.UpdateUI();
             stage = MovesMade / TilesInStage;
-            
-            Debug.Log("staeg"+ stage+" sped "+Game.Instance.TilePassTime);
         }
     }
     

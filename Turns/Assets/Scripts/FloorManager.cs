@@ -12,12 +12,17 @@ public class FloorManager : Singleton<FloorManager>
     Vector3Int _nextTilePosition = Vector3Int.zero;
     Vector3Int _currentDirection = VectorInt.forward;
     int passTileBufffer;
+    int minPathChangeFreq = 1;
+    int minPathChangeBuffer;
+    bool changeQueued;
 
     public void ResetAndPlay()
     {
         passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
         _currentDirection = VectorInt.forward;
+        minPathChangeBuffer = minPathChangeFreq;
+        changeQueued = false;
         StartCoroutine(InitialSetup());
     }
 
@@ -58,11 +63,20 @@ public class FloorManager : Singleton<FloorManager>
 
     public void SetNextPosition(bool init)
     {
-        if (!init)
+        if (!init )
         {
-            if (Random.Range(0, Game.Instance.PathChangeProbability) == 0) // if change direction
+            if (changeQueued || Random.Range(0, Game.Instance.PathChangeProbability) == 0) // if change direction
             {
-                _currentDirection = GetChangedRandomDirection( _currentDirection, _tiles.Last.Value.PositionKey);
+                if (!changeQueued && minPathChangeBuffer-- >= 0)
+                {
+                    changeQueued = true;
+                }
+                else
+                {
+                    _currentDirection = GetChangedRandomDirection(_currentDirection, _tiles.Last.Value.PositionKey);
+                    minPathChangeBuffer = minPathChangeFreq;
+                    changeQueued = false;
+                }
             }
         }
 
@@ -108,13 +122,26 @@ public class FloorManager : Singleton<FloorManager>
 
     Vector3Int GetChangedRandomDirection(Vector3Int dir, Vector3Int? fromPosition = null)
     {
-        if (dir == Vector3.forward || dir == Vector3.back)
+        int safeint = 30;
+        while (true)
         {
-            return Random.Range(0, 2) > 0 ? Vector3Int.left : Vector3Int.right;
-        }
-        else
-        {
-            return Random.Range(0, 2) > 0 ? VectorInt.forward : VectorInt.back;
+            var newDirection = VectorInt.Directions[Random.Range(0, 4)];
+
+            if (newDirection.x == dir.x || newDirection.z == dir.z)
+            {
+                continue;
+            }
+
+            if (fromPosition != null && !IsSafeDirection(fromPosition.Value, newDirection))
+            {
+                if (safeint-- > 0)
+                {
+                    continue;
+                }
+                Debug.LogError("safe direction !");
+            }
+
+            return newDirection;
         }
     }
 
