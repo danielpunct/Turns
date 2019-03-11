@@ -10,6 +10,7 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         Game.Instance.Reset();
         Menu.Instance.Show();
         UpdateUI();

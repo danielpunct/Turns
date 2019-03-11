@@ -11,6 +11,7 @@ public class Game : Singleton<Game>
     public bool PlayerRunning { get; private set; }
     // time player takes to pass a tile
     public float initialTilePassTime = 0.4f;    
+    public float fastestTilePassTime = 0.1f;    
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1;
     public int PathChangeProbability = 7;
@@ -21,7 +22,7 @@ public class Game : Singleton<Game>
     float _startTime;
     int stage = 0;
 
-    public float TilePassTime => Mathf.Lerp(0.1f, initialTilePassTime, (MaxStage - stage) / (float)MaxStage);
+    public float TilePassTime => Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - stage) / (float)MaxStage);
 
     public void Reset()
     {

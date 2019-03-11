@@ -117,7 +117,7 @@ public class Player : Singleton<Player>
         IsFalling = true;
     }
 
-    float Speed
+    public float Speed
     {
         get { return (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime) * _dieingInertia; }
     }
