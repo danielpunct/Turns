@@ -1573,7 +1573,7 @@ MonoBehaviour:
   fastestTilePassTime: 0.05
   InitialTiles: 7
   PlayerPassTilesBuffer: 1
-  PathChangeProbability: 7
+  PathChangeProbability: 5
   MaxStage: 10
   TilesInStage: 4
 --- !u!1 &2088582735
@@ -1655,6 +1655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   __messageText: 
+  controller: {fileID: 2088582740}
   apearParticleSystem: {fileID: 812528897456182406}
 --- !u!114 &2088582740
 MonoBehaviour:
@@ -1668,7 +1669,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14f113a6bb94052438a93bf23e2a1865, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animator: {fileID: 5445373288077643503}
+  _anim: {fileID: 5445373288077643503}
+  _rb: {fileID: 2088582738}
+  m_GroundCheckDistance: 0.1
 --- !u!198 &684684136946843450
 ParticleSystem:
   m_ObjectHideFlags: 0

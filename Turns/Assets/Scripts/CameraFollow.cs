@@ -9,9 +9,9 @@ public class CameraFollow : MonoBehaviour
 
     void FixedUpdate()
     {
-        if (!Player.Instance.IsFalling)
+        if (Game.Instance.IsStarted)
         {
-            transform.position = Vector3.Lerp(transform.position, player.position, Game.Instance.PlayerRunning ? Time.fixedDeltaTime * followMultiplier : 1);
+            transform.position = Vector3.Lerp(transform.position, player.position, Player.Instance.IsRunning ? Time.fixedDeltaTime * followMultiplier : 1);
         }
     }
 }

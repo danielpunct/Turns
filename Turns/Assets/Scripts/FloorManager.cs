@@ -63,7 +63,7 @@ public class FloorManager : Singleton<FloorManager>
 
     public void SetNextPosition(bool init)
     {
-        if (!init )
+        if (!init)
         {
             if (changeQueued || Random.Range(0, Game.Instance.PathChangeProbability) == 0) // if change direction
             {
@@ -122,7 +122,7 @@ public class FloorManager : Singleton<FloorManager>
 
     Vector3Int GetChangedRandomDirection(Vector3Int dir, Vector3Int? fromPosition = null)
     {
-        int safeint = 30;
+        var safeint = 30;
         while (true)
         {
             var newDirection = VectorInt.Directions[Random.Range(0, 4)];
@@ -138,6 +138,7 @@ public class FloorManager : Singleton<FloorManager>
                 {
                     continue;
                 }
+
                 Debug.LogError("safe direction !");
             }
 
@@ -147,7 +148,7 @@ public class FloorManager : Singleton<FloorManager>
 
     bool IsSafeDirection(Vector3Int fromPosition, Vector3Int inDirection)
     {
-        for (int i = 1; i <= Game.Instance.InitialTiles * 2 / 3; i++)
+        for (var i = 1; i <= Game.Instance.InitialTiles * 2 / 3; i++)
         {
             if (_tilesDict.ContainsKey(fromPosition + inDirection * i))
             {
@@ -157,8 +158,8 @@ public class FloorManager : Singleton<FloorManager>
 
         return true;
     }
-    
-    
+
+
     public Vector3Int GetNextPathChangeDirection(Vector3Int fromPositionKey, Vector3Int currentDirection)
     {
         var tile = _tiles.Find(_tilesDict[fromPositionKey]);
@@ -169,14 +170,15 @@ public class FloorManager : Singleton<FloorManager>
             {
                 break;
             }
-            var direction = tile.Value.NextPositionKey - tile.Value.PositionKey;         
+
+            var direction = tile.Value.NextPositionKey - tile.Value.PositionKey;
 
             if (direction.Value != currentDirection)
             {
                 return direction.Value;
             }
-            
-            if(Game.Instance.PlayerRunning)
+
+            if (Player.Instance.IsRunning)
             {
                 // if first current tile is not the corner, player dies
                 Game.Instance.PlayerDie();
