@@ -21,7 +21,7 @@ public class Menu : Singleton<Menu>
 
    IEnumerator ShowLate()
    {
-      yield return  new WaitForSeconds(1);
+      yield return new WaitForSeconds(1);
       lateHolder.transform.localScale = Vector3.zero;
       lateHolder.transform.DOScale(1, 0.6f).SetEase(Ease.OutBack);
       lateHolder.SetActive(true);

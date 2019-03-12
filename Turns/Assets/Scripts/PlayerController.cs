@@ -79,7 +79,7 @@ public class PlayerController : MonoBehaviour
 //      Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 //      m_Rigidbody.AddForce(extraGravityForce);
 
-      if (_rb.velocity.y != 0)
+      if (Mathf.Abs( _rb.velocity.y) >0.01f)
       {
          m_GroundCheckDistance = m_OrigGroundCheckDistance;
          m_IsGrounded = false;

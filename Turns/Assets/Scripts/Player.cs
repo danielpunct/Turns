@@ -38,12 +38,12 @@ public class Player : Singleton<Player>
         {
             if (_dieingInertia > 0.001f)
             {
-                _dieingInertia *= 0.9f;
+                _dieingInertia *= 0.96f;
             }
         }
 
         // is falling to it's death for too long
-        if (!Game.Instance.IsStarted && IsFalling && Time.unscaledTime - _startDieTime > 4)
+        if (!Game.Instance.IsStarted && IsFalling && Time.unscaledTime - _startDieTime > 6)
         {
             Reset();
         }
@@ -81,10 +81,7 @@ public class Player : Singleton<Player>
 
     public void Play()
     {
-        if (_appearSequence != null)
-        {
-            _appearSequence.Kill();
-        }
+        _appearSequence?.Kill();
 
         _appearSequence = DOTween.Sequence()
             .Insert(0, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
