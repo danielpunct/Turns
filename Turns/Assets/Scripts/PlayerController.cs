@@ -76,8 +76,8 @@ public class PlayerController : MonoBehaviour
    void HandleAirborneMovement()
    {
       // apply extra gravity from multiplier:
-//      Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
-//      m_Rigidbody.AddForce(extraGravityForce);
+      Vector3 extraGravityForce = (Physics.gravity * 2) - Physics.gravity;
+      _rb.AddForce(extraGravityForce);
 
       if (Mathf.Abs( _rb.velocity.y) >0.01f)
       {
@@ -100,7 +100,7 @@ public class PlayerController : MonoBehaviour
       _anim.SetBool("OnGround", m_IsGrounded);
       if (!m_IsGrounded)
       {
-         _anim.SetFloat("Jump", _rb.velocity.y);
+         _anim.SetFloat("Jump", Mathf.Min(-5,_rb.velocity.y));
       }
    }
 }

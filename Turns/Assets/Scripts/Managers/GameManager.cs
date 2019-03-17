@@ -12,7 +12,7 @@ public class GameManager : Singleton<GameManager>
     {
         Application.targetFrameRate = 60;
         Game.Instance.Reset();
-        Menu.Instance.Show();
+        Menu.Instance.Show(true);
         UpdateUI();
     }
 
@@ -30,6 +30,6 @@ public class GameManager : Singleton<GameManager>
 
     public void GameOver()
     {
-        Menu.Instance.Show();
+        Menu.Instance.Show(false);
     }
 }

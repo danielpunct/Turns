@@ -7,8 +7,6 @@ using UnityEngine.Serialization;
 
 public class Game : Singleton<Game>
 {
-    public CameraFollow cameraFollow;
-
     public bool IsStarted { get; private set; }
     // time player takes to pass a tile
     public float initialTilePassTime = 0.4f;
@@ -30,12 +28,13 @@ public class Game : Singleton<Game>
     {
         MovesMade = 0;
         stage = 0;
+        FloorManager.Instance.Reset();
+        Player.Instance.Reset();
     }
 
     public void Play()
     {
         Reset();
-        Player.Instance.Reset();
 
         StartCoroutine(BeginAfterCountdown());
         IsStarted = true;
@@ -43,8 +42,9 @@ public class Game : Singleton<Game>
 
     IEnumerator BeginAfterCountdown()
     {
-        FloorManager.Instance.ResetAndPlay();
+        FloorManager.Instance.Play();
         Player.Instance.Play();
+        CameraFollow.Instance.SetForGame();
         yield return new WaitForSeconds(0.6f);
         _startTime = Time.fixedTime;
     }

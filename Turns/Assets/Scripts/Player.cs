@@ -38,7 +38,7 @@ public class Player : Singleton<Player>
         {
             if (_dieingInertia > 0.001f)
             {
-                _dieingInertia *= 0.96f;
+                _dieingInertia *= 0.94f;
             }
         }
 
@@ -66,7 +66,6 @@ public class Player : Singleton<Player>
         IsFalling = false;
         controller.Reset();
         _rb.isKinematic = true;
-        _tr.localScale = Vector3.zero;
         _tr.localPosition = Vector3.up * 2f;
         _currentTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
@@ -92,6 +91,7 @@ public class Player : Singleton<Player>
                 IsFalling = false;
             });
 
+        _tr.localScale = Vector3.zero;
         IsFalling = true;
         _rb.isKinematic = false;
     }

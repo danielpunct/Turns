@@ -16,28 +16,31 @@ public class FloorManager : Singleton<FloorManager>
     int minPathChangeBuffer;
     bool changeQueued;
 
-    public void ResetAndPlay()
+    public void Reset()
     {
         passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
         _currentDirection = VectorInt.forward;
         minPathChangeBuffer = minPathChangeFreq;
         changeQueued = false;
+        PoolManager.Instance.TilesPool.DespawnAll();
+    }
+
+    public void Play()
+    {
+        _tiles = new LinkedList<FloorTile>();
+        _tilesDict = new Dictionary<Vector3Int, FloorTile>();
         StartCoroutine(InitialSetup());
     }
 
     IEnumerator InitialSetup()
     {
-        PoolManager.Instance.TilesPool.DespawnAll();
-        _tiles = new LinkedList<FloorTile>();
-        _tilesDict = new Dictionary<Vector3Int, FloorTile>();
-
         for (int i = 0; i < Game.Instance.InitialTiles; i++)
         {
             AppearNewTile();
             SetNextPosition(true);
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.2f);
         }
     }
 

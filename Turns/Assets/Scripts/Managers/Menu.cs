@@ -13,19 +13,27 @@ public class Menu : Singleton<Menu>
       lateHolder.transform.localScale = Vector3.zero;
    }
 
-   public void Show()
+   public void Show(bool init)
    {
       gameObject.SetActive(true);
-      StartCoroutine(ShowLate());
+         StartCoroutine(ShowLate(init));
    }
 
-   IEnumerator ShowLate()
+   IEnumerator ShowLate(bool init)
    {
-      yield return new WaitForSeconds(1);
+      if (!init)
+      {
+         yield return new WaitForSeconds(1);
+      }
+
       lateHolder.transform.localScale = Vector3.zero;
       lateHolder.transform.DOScale(1, 0.6f).SetEase(Ease.OutBack);
       lateHolder.SetActive(true);
+      Player.Instance.Reset(); // need to be done before camera
+      CameraFollow.Instance.SetForMenu();
+      FloorManager.Instance.Reset();
    }
+
 
    public void Hide()
    {
