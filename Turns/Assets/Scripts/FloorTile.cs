@@ -31,7 +31,7 @@ public class FloorTile : MonoBehaviour
         NextPositionKey = null;
 
         mesh.enabled = !isHole;
-        coll.enabled = !isHole;
+        coll.enabled = true;
         
         if (!isHole)
         {
@@ -42,5 +42,10 @@ public class FloorTile : MonoBehaviour
         {
             transform.localScale = Vector3.one;
         }
+    }
+
+    public void LetPlayerFall()
+    {
+        coll.enabled = false;
     }
 }

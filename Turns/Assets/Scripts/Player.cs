@@ -7,6 +7,9 @@ using UnityEngine.Serialization;
 public class Player : Singleton<Player>
 {
     public GameObject apearParticleSystem;
+    public GameObject lightLandParticleSystem;
+    public Transform graphicHolder;
+    public Transform particlesPivot;
     public bool IsFalling { get; private set; }
     public bool IsRunning { get; private set; }
     public bool IsJumping { get; private set; }
@@ -17,8 +20,7 @@ public class Player : Singleton<Player>
 
     float _dieingInertia = 1;
     float _startDieTime;
-    Sequence _appearSequence;
-    bool _pleaseJump;
+    Sequence _seq;
     int jumpBuffer;
 
     bool FallingInTheBeginning => IsFalling && Game.Instance.IsStarted;
@@ -56,13 +58,7 @@ public class Player : Singleton<Player>
         {
             _rb.MovePosition(_tr.localPosition +
                              new Vector3(Direction.x * Speed, Direction.y * Speed, Direction.z * Speed));
-
-            if (_pleaseJump && !IsJumping)
-            {
-                _rb.AddForce(Vector3.up * 200 * Game.Instance.HoleLength);
-                IsJumping = true;
-                _pleaseJump = false;
-            }
+            
         }
 
         if (!IsFalling)
@@ -70,13 +66,13 @@ public class Player : Singleton<Player>
             CheckTilePosition();
         }
     }
+    
 
     public void Reset()
     {
         IsRunning = false;
         IsFalling = false;
         IsJumping = false;
-        _pleaseJump = false;
         jumpBuffer = 0;
         
         //If human player
@@ -97,11 +93,11 @@ public class Player : Singleton<Player>
 
     public void Play()
     {
-        _appearSequence?.Kill();
+        _seq?.Kill();
 
-        _appearSequence = DOTween.Sequence()
+        _seq = DOTween.Sequence()
             .Insert(0, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
-            .InsertCallback(0.2f, () => { apearParticleSystem.SetActive(true); })
+            .InsertCallback(0.4f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
                 IsRunning = true;
@@ -113,6 +109,18 @@ public class Player : Singleton<Player>
         _rb.isKinematic = false;
     }
 
+    void ShowParticles_Land()
+    {
+        apearParticleSystem.SetActive(false);
+        apearParticleSystem.transform.position = particlesPivot.position;
+        apearParticleSystem.SetActive(true);
+    }
+    void ShowParticles_LightLand()
+    {
+        lightLandParticleSystem.SetActive(false);
+        lightLandParticleSystem.transform.position = particlesPivot.position;
+        lightLandParticleSystem.SetActive(true);
+    }
 
     public void ChangeDirection(Vector3Int newDirection)
     {
@@ -124,8 +132,15 @@ public class Player : Singleton<Player>
 
     public void Jump()
     {
-        _pleaseJump = true;
         jumpBuffer = Game.Instance.HoleLength;
+        IsJumping = true;
+        _seq?.Kill();
+        var duration = Game.Instance.TilePassTime * (0.25f + Game.Instance.HoleLength / 2f);
+        var height = 1 * Game.Instance.HoleLength / 2f;
+        _seq = DOTween.Sequence()
+            .Insert(0, graphicHolder.DOLocalMoveY(height, duration).SetEase(Ease.OutCubic))
+            .Insert(duration, graphicHolder.DOLocalMoveY(0, duration).SetEase(Ease.InCubic))
+            .InsertCallback(duration * 2, ShowParticles_LightLand);
     }
 
     public void JumpFinished()
@@ -157,7 +172,7 @@ public class Player : Singleton<Player>
         {
             FloorManager.Instance.OnPlayerPassedTile();
             
-            if (jumpBuffer-- < 0)
+            if (jumpBuffer-- <= 0)
             {
                 JumpFinished();
             }
@@ -176,15 +191,13 @@ public class Player : Singleton<Player>
 
             if (tile != null)
             {
-
                 if (tile.IsHole)
                 {
                     if (!IsJumping)
                     {
+                        tile.LetPlayerFall();
                         Game.Instance.PlayerDie();
                     }
-
-                   
                 }
             }
         }
