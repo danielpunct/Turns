@@ -44,7 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e04263f1e823c45b03c6c3737f34b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PositionKey: {x: 0, y: 0, z: 0}
+  mesh: {fileID: 377247689504861313}
+  coll: {fileID: 2556504403842000555}
 --- !u!1 &7231370876982431889
 GameObject:
   m_ObjectHideFlags: 0

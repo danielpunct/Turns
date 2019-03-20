@@ -1,21 +1,25 @@
 ﻿using DG.Tweening;
 using Gamelogic.Extensions;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Player : Singleton<Player>
 {
-    public PlayerController controller;
     public GameObject apearParticleSystem;
     public bool IsFalling { get; private set; }
     public bool IsRunning { get; private set; }
+    public bool IsJumping { get; private set; }
     public Vector3Int Direction { get; private set; }
     Rigidbody _rb;
     Transform _tr;
-    Vector3Int? _currentTilePosition = Vector3Int.zero;
+    public Vector3Int? CurrentTilePosition = Vector3Int.zero;
 
     float _dieingInertia = 1;
     float _startDieTime;
     Sequence _appearSequence;
+    bool _pleaseJump;
+    int jumpBuffer;
 
     bool FallingInTheBeginning => IsFalling && Game.Instance.IsStarted;
 
@@ -52,6 +56,13 @@ public class Player : Singleton<Player>
         {
             _rb.MovePosition(_tr.localPosition +
                              new Vector3(Direction.x * Speed, Direction.y * Speed, Direction.z * Speed));
+
+            if (_pleaseJump && !IsJumping)
+            {
+                _rb.AddForce(Vector3.up * 200 * Game.Instance.HoleLength);
+                IsJumping = true;
+                _pleaseJump = false;
+            }
         }
 
         if (!IsFalling)
@@ -64,10 +75,16 @@ public class Player : Singleton<Player>
     {
         IsRunning = false;
         IsFalling = false;
-        controller.Reset();
+        IsJumping = false;
+        _pleaseJump = false;
+        jumpBuffer = 0;
+        
+        //If human player
+        //PlayerController.Instance.Reset();
+
         _rb.isKinematic = true;
         _tr.localPosition = Vector3.up * 2f;
-        _currentTilePosition = Vector3Int.zero;
+        CurrentTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
         _rb.rotation = Quaternion.identity;
         _tr.rotation = Quaternion.identity;
@@ -96,29 +113,24 @@ public class Player : Singleton<Player>
         _rb.isKinematic = false;
     }
 
-    public void ChangeDirection()
-    {
-        if (_currentTilePosition != null)
-        {
-            var tile = FloorManager.Instance.PeekTile(_currentTilePosition.Value);
 
-            if (tile != null && tile.NextPositionKey != null)
-            {
-                var direction = tile.NextPositionKey.Value - _currentTilePosition.Value;
-                if (direction == Direction)
-                {
-                    Direction =
-                        FloorManager.Instance.GetNextPathChangeDirection(_currentTilePosition.Value, Direction);
-                }
-                else
-                {
-                    Direction = direction;
-                }
-            }
-        }
+    public void ChangeDirection(Vector3Int newDirection)
+    {
+        Direction = newDirection;
 
         var eulerRotation = Quaternion.LookRotation(Direction, Vector3.up).eulerAngles;
         _rb.DORotate(eulerRotation, 0.4f).SetEase(Ease.OutBack);
+    }
+
+    public void Jump()
+    {
+        _pleaseJump = true;
+        jumpBuffer = Game.Instance.HoleLength;
+    }
+
+    public void JumpFinished()
+    {
+        IsJumping = false;
     }
 
     public void SlowDownAndDie()
@@ -141,18 +153,40 @@ public class Player : Singleton<Player>
 
         var tilePosition = new Vector3Int(Mathf.RoundToInt(pos.x), 0, Mathf.RoundToInt(pos.z));
 
-        if (_currentTilePosition != null && tilePosition != _currentTilePosition)
+        if (CurrentTilePosition != null && tilePosition != CurrentTilePosition)
         {
             FloorManager.Instance.OnPlayerPassedTile();
+            
+            if (jumpBuffer-- < 0)
+            {
+                JumpFinished();
+            }
         }
 
-        _currentTilePosition = tilePosition;
+        CurrentTilePosition = tilePosition;
 
-        var tile = FloorManager.Instance.PeekTile(_currentTilePosition.Value);
+        var tile = FloorManager.Instance.PeekTile(CurrentTilePosition.Value);
 
-        if (tile == null && IsRunning)
+        if (Game.Instance.IsStarted)
         {
-            Game.Instance.PlayerDie();
+            if (tile == null)
+            {
+                Game.Instance.PlayerDie();
+            }
+
+            if (tile != null)
+            {
+
+                if (tile.IsHole)
+                {
+                    if (!IsJumping)
+                    {
+                        Game.Instance.PlayerDie();
+                    }
+
+                   
+                }
+            }
         }
     }
 }

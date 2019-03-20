@@ -16,14 +16,14 @@ public class Menu : Singleton<Menu>
    public void Show(bool init)
    {
       gameObject.SetActive(true);
-         StartCoroutine(ShowLate(init));
+      StartCoroutine(ShowLate(init));
    }
 
    IEnumerator ShowLate(bool init)
    {
       if (!init)
       {
-         yield return new WaitForSeconds(1);
+         yield return new WaitForSeconds(3);
       }
 
       lateHolder.transform.localScale = Vector3.zero;

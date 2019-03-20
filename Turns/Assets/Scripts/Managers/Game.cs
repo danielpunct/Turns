@@ -4,18 +4,26 @@ using DG.Tweening;
 using Gamelogic.Extensions;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class Game : Singleton<Game>
 {
     public bool IsStarted { get; private set; }
+
     // time player takes to pass a tile
     public float initialTilePassTime = 0.4f;
     public float fastestTilePassTime = 0.1f;
     public int InitialTiles = 6;
-    public int PlayerPassTilesBuffer = 1;
-    public int PathChangeProbability = 7;
+    public int PlayerPassTilesBuffer = 1; // initial player wait
+    public int StateChangeProbability = 7;
+    [Range(0,100)]
+    public int HoleChangePondere = 50;
+
     public int MaxStage = 10;
     public int TilesInStage = 4;
+    public int DirChageMinDistance = 1;
+    public int HoleLength = 2;
+    public int HolesMinDistance = 2;
     public int MovesMade { get; private set; }
 
     float _startTime;
@@ -51,9 +59,9 @@ public class Game : Singleton<Game>
 
     public void UserTap()
     {
-        if (Player.Instance.IsRunning)
+        if (Player.Instance.IsRunning && !Player.Instance.IsJumping)
         {
-            Player.Instance.ChangeDirection();
+            OperationsManager.Instance.DoNextAction();
             MovesMade++;
             GameManager.Instance.UpdateUI();
             stage = MovesMade / TilesInStage;
