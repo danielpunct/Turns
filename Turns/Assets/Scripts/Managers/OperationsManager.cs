@@ -22,7 +22,6 @@ public class OperationsManager : Singleton<OperationsManager>
         switch (pendingAction)
         {
             case PlayerAction.None:
-                Game.Instance.PlayerDie();
                 Player.Instance.ChangeDirection( FloorManager.Instance.GetChangedRandomDirection(Player.Instance.Direction));
                 break;
             case PlayerAction.Back:

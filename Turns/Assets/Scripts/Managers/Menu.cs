@@ -23,7 +23,7 @@ public class Menu : Singleton<Menu>
    {
       if (!init)
       {
-         yield return new WaitForSeconds(3);
+         yield return new WaitForSeconds(1.5f);
       }
 
       lateHolder.transform.localScale = Vector3.zero;

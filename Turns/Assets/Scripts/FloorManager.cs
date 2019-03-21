@@ -16,16 +16,18 @@ public class FloorManager : Singleton<FloorManager>
     Vector3Int _nextTilePosition = Vector3Int.zero;
     int _nextHoleBuffer = 0; // units of hole left
     int _nextDirChangeBuffer = 0;
+    int _nextStairsBuffer = 0;
+    bool _nextStairDirectionUp;
 
     public void Reset()
     {
         passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
         _currentDirection = VectorInt.forward;
-        _nextDirChangeBuffer = Game.Instance.DirChageMinDistance;
         PoolManager.Instance.TilesPool.DespawnAll();
         _nextHoleBuffer = 0;
         _nextDirChangeBuffer = 0;
+        _nextStairsBuffer = 0;
     }
 
     public void Play()
@@ -73,7 +75,10 @@ public class FloorManager : Singleton<FloorManager>
         var tile = PoolManager.Instance.TilesPool.Spawn(_nextTilePosition, Quaternion.identity, tilesHolder)
             .GetComponent<FloorTile>();
 
-        tile.Appear(_nextHoleBuffer > 0, _nextTilePosition);
+        tile.Appear(
+            _nextHoleBuffer > 0,
+            _nextStairsBuffer > 0 ? (_nextStairDirectionUp ? 1 : -1) : 0,
+            _nextTilePosition);
 
         RegisterLastTile(tile, _nextTilePosition);
 
@@ -168,18 +173,18 @@ public class FloorManager : Singleton<FloorManager>
                     return OperationsManager.PlayerAction.None;
                 }
             }
-            
-            var direction = tile.Value.NextPositionKey - tile.Value.PositionKey;
 
-            if (direction.Value != currentDirection)
+            var direction = tile.Value.NextPositionKey.Value.HorizontalDif(tile.Value.PositionKey);
+
+            if (direction != currentDirection)
             {
-                return direction.Value.ToAction();
+                return direction.ToAction();
             }
 
             if (Game.Instance.IsStarted)
             {
                 // if first current tile is not the corner, player dies
-                Game.Instance.PlayerDie();
+                //Game.Instance.PlayerDie();
                 // continue to find next operation to execute even if dieing
             }
 
@@ -193,11 +198,22 @@ public class FloorManager : Singleton<FloorManager>
     {
         if (!init)
         {
-            var changeDirAllowed = _nextHoleBuffer <= -1 && _nextDirChangeBuffer <= -Game.Instance.DirChageMinDistance;
-            var holeAllowed = _nextHoleBuffer <= -Game.Instance.HolesMinDistance;
+            var changeDirAllowed = 
+                _nextDirChangeBuffer <= -Game.Instance.DirChageMinDistance &&
+                _nextHoleBuffer <= -1 &&
+                _nextStairsBuffer <= 0;
+            var holeAllowed = 
+                _nextHoleBuffer <= -Game.Instance.HolesMinDistance &&
+                _nextDirChangeBuffer <= -1 &&
+                _nextStairsBuffer <= 0;
+            var stairsAllowed = 
+                _nextStairsBuffer <= -Game.Instance.StairsMinDistance &&
+                _nextDirChangeBuffer <= -1 &&
+                _nextHoleBuffer <= -1;
            
             _nextDirChangeBuffer--;
             _nextHoleBuffer--;
+            _nextStairsBuffer--;
             
             if (Random.Range(0, Game.Instance.StateChangeProbability) == 0) // if change state
             {
@@ -205,11 +221,22 @@ public class FloorManager : Singleton<FloorManager>
                 {
                     _nextHoleBuffer = Game.Instance.HoleLength;
                 }
+                else if (stairsAllowed && Utils.GetRand100Pondere(Game.Instance.StairePondere)) // if do stairs
+                {
+                    _nextStairDirectionUp = false;// Random.Range(0, 2) == 1;
+                    _nextStairsBuffer = Game.Instance.StairsLength;
+                    
+                }
                 else if(changeDirAllowed) // change dir
                 {
                     _currentDirection = GetChangedRandomDirection(_currentDirection, _tiles.Last.Value.PositionKey);
                     _nextDirChangeBuffer = Game.Instance.DirChageMinDistance;
                 }
+            }
+
+            if (_nextStairsBuffer > 0)
+            {
+                _nextTilePosition.y += _nextStairDirectionUp ? 1 : -1;
             }
         }
 

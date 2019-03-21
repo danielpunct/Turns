@@ -43,6 +43,11 @@ using UnityEngine;
             }
         }
 
+        public static Vector3Int HorizontalDif(this Vector3Int a, Vector3Int b)
+        {
+            return  new Vector3Int(a.x - b.x, 0, a.z - b.z);
+        }
+
         public static Vector3Int fromPlayerAction(OperationsManager.PlayerAction action)
         {
             switch (action)

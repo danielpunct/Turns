@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using Gamelogic.Extensions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Game : Singleton<Game>
 {
+    public TMP_Text _debug;
     public bool IsStarted { get; private set; }
 
     // time player takes to pass a tile
@@ -18,12 +20,16 @@ public class Game : Singleton<Game>
     public int StateChangeProbability = 7;
     [Range(0,100)]
     public int HoleChangePondere = 50;
+    [Range(0,100)]
+    public int StairePondere = 50;
 
     public int MaxStage = 10;
     public int TilesInStage = 4;
     public int DirChageMinDistance = 1;
     public int HoleLength = 2;
     public int HolesMinDistance = 2;
+    public int StairsLength = 2;
+    public int StairsMinDistance = 2;
     public int MovesMade { get; private set; }
 
     float _startTime;

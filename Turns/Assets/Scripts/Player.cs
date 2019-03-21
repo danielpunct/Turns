@@ -18,7 +18,8 @@ public class Player : Singleton<Player>
     Transform _tr;
     public Vector3Int? CurrentTilePosition = Vector3Int.zero;
 
-    float _dieingInertia = 1;
+    Vector3Int checkedTilePosition = Vector3Int.up;
+    FloorTile lastSteppedTile = null;
     float _startDieTime;
     Sequence _seq;
     int jumpBuffer;
@@ -29,7 +30,6 @@ public class Player : Singleton<Player>
     {
         _rb = GetComponent<Rigidbody>();
         _tr = transform;
-        _dieingInertia = 1;
     }
 
     void FixedUpdate()
@@ -39,14 +39,7 @@ public class Player : Singleton<Player>
             return;
         }
 
-        // is falling to it's death
-        if (!Game.Instance.IsStarted && IsFalling)
-        {
-            if (_dieingInertia > 0.001f)
-            {
-                _dieingInertia *= 0.94f;
-            }
-        }
+       
 
         // is falling to it's death for too long
         if (!Game.Instance.IsStarted && IsFalling && Time.unscaledTime - _startDieTime > 6)
@@ -66,7 +59,7 @@ public class Player : Singleton<Player>
             CheckTilePosition();
         }
     }
-    
+
 
     public void Reset()
     {
@@ -84,7 +77,6 @@ public class Player : Singleton<Player>
         _rb.velocity = Vector3.zero;
         _rb.rotation = Quaternion.identity;
         _tr.rotation = Quaternion.identity;
-        _dieingInertia = 1;
         Direction = VectorInt.forward;
         _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         apearParticleSystem.SetActive(false);
@@ -134,6 +126,9 @@ public class Player : Singleton<Player>
     {
         jumpBuffer = Game.Instance.HoleLength;
         IsJumping = true;
+        
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
+        
         _seq?.Kill();
         var duration = Game.Instance.TilePassTime * (0.25f + Game.Instance.HoleLength / 2f);
         var height = 1 * Game.Instance.HoleLength / 2f;
@@ -146,6 +141,7 @@ public class Player : Singleton<Player>
     public void JumpFinished()
     {
         IsJumping = false;
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
     }
 
     public void SlowDownAndDie()
@@ -159,19 +155,27 @@ public class Player : Singleton<Player>
 
     public float Speed
     {
-        get { return (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime) * _dieingInertia; }
+        get { return (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime); }
     }
 
     void CheckTilePosition()
     {
         var pos = _tr.localPosition;
+        
+        var tilePosition = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
 
-        var tilePosition = new Vector3Int(Mathf.RoundToInt(pos.x), 0, Mathf.RoundToInt(pos.z));
+        if (tilePosition.HorizontalDif(checkedTilePosition) == Vector3Int.zero)
+        {
+            return;
+        }
 
+        checkedTilePosition = tilePosition;
+
+        Game.Instance._debug.text = Game.Instance.IsStarted ? tilePosition.ToString() : Game.Instance._debug.text +"end";
+        
         if (CurrentTilePosition != null && tilePosition != CurrentTilePosition)
         {
             FloorManager.Instance.OnPlayerPassedTile();
-            
             if (jumpBuffer-- <= 0)
             {
                 JumpFinished();
@@ -181,24 +185,16 @@ public class Player : Singleton<Player>
         CurrentTilePosition = tilePosition;
 
         var tile = FloorManager.Instance.PeekTile(CurrentTilePosition.Value);
-
-        if (Game.Instance.IsStarted)
+        if (tile != null)
         {
-            if (tile == null)
+            lastSteppedTile = tile;
+        }
+
+        if (Game.Instance.IsStarted && lastSteppedTile!= null)
+        {
+            if (tilePosition.y - lastSteppedTile.PositionKey.y < -1)
             {
                 Game.Instance.PlayerDie();
-            }
-
-            if (tile != null)
-            {
-                if (tile.IsHole)
-                {
-                    if (!IsJumping)
-                    {
-                        tile.LetPlayerFall();
-                        Game.Instance.PlayerDie();
-                    }
-                }
             }
         }
     }

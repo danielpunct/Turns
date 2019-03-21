@@ -14,25 +14,25 @@ public class FloorTile : MonoBehaviour
 
 
     float appearDuration => Game.Instance.TilePassTime * 1.5f;
-   
 
-     public void Dissapear()
+
+    public void Dissapear()
     {
         DOTween.Sequence()
             .Append(transform.DOScale(0, appearDuration))
             .AppendCallback(() => { PoolManager.Instance.TilesPool.Despawn(gameObject); });
     }
 
-    public void Appear(bool isHole, Vector3Int atPosition)
+    public void Appear(bool isHole, int stairState, Vector3Int atPosition)
     {
         PositionKey = atPosition;
         IsHole = isHole;
-    
+
         NextPositionKey = null;
 
         mesh.enabled = !isHole;
-        coll.enabled = true;
-        
+        coll.isTrigger = isHole;
+
         if (!isHole)
         {
             transform.localScale = Vector3.zero;
@@ -44,8 +44,4 @@ public class FloorTile : MonoBehaviour
         }
     }
 
-    public void LetPlayerFall()
-    {
-        coll.enabled = false;
-    }
 }
