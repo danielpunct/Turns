@@ -27,6 +27,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         cTween?.Kill();
         transform.position = player.position;
+//        transform.DOMove( player.position, 0.1f).SetEase(Ease.OutExpo);
         cTween = cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack);
     }
 

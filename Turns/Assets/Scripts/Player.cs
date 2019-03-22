@@ -127,7 +127,7 @@ public class Player : Singleton<Player>
         jumpBuffer = Game.Instance.HoleLength;
         IsJumping = true;
         
-        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
+        _rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ ;
         
         _seq?.Kill();
         var duration = Game.Instance.TilePassTime * (0.25f + Game.Instance.HoleLength / 2f);
@@ -190,7 +190,7 @@ public class Player : Singleton<Player>
             lastSteppedTile = tile;
         }
 
-        if (Game.Instance.IsStarted && lastSteppedTile!= null)
+        if (Game.Instance.IsStarted && lastSteppedTile != null)
         {
             if (tilePosition.y - lastSteppedTile.PositionKey.y < -1)
             {

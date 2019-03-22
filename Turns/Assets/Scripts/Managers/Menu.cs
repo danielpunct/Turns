@@ -7,50 +7,81 @@ using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
-   [Header("Menu")] 
-   public GameObject menuUIHolder;
-   public GameObject lateHolder;
+    [Header("Menu")] public GameObject menuUIHolder;
+    public CanvasGroup lateHolder;
+    public CanvasGroup buttonHolder1;
+    public CanvasGroup buttonHolder2;
+    public CanvasGroup buttonHolder3;
+    public CanvasGroup buttonHolder4;
 
-   [Header("Game")]
-   public GameObject gameUIHolder;
+    [Header("Game")] public GameObject gameUIHolder;
 
-   void Awake()
-   {
-      lateHolder.transform.localScale = Vector3.zero;
-   }
+    Sequence _menuSeq;
 
-   public void ShowMenu(bool init)
-   {
-      menuUIHolder.SetActive(true);
-      gameUIHolder.SetActive(false);
-      StartCoroutine(ShowLateUIHolder(init));
-   }
+    void Awake()
+    {
+        ResetMenuUI();
+    }
 
-   IEnumerator ShowLateUIHolder(bool init)
-   {
-      if (!init)
-      {
-         yield return new WaitForSeconds(1.5f);
-      }
+    void ResetMenuUI()
+    {
+        lateHolder.gameObject.SetActive(true);
+        lateHolder.alpha = 0;
+        buttonHolder1.alpha = 0;
+        buttonHolder2.alpha = 0;
+        buttonHolder3.alpha = 0;
+        buttonHolder4.alpha = 0;
 
-      lateHolder.transform.localScale = Vector3.zero;
-      lateHolder.transform.DOScale(1, 0.6f).SetEase(Ease.OutBack);
-      lateHolder.SetActive(true);
-      Player.Instance.Reset(); // need to be done before camera
-      CameraFollow.Instance.SetForMenu();
-      FloorManager.Instance.Reset();
-   }
+        buttonHolder1.transform.DOLocalMoveY(-40, 0);
+        buttonHolder2.transform.DOLocalMoveY(-40, 0);
+        buttonHolder3.transform.DOLocalMoveY(-40, 0);
+        buttonHolder4.transform.DOLocalMoveY(-40, 0);
+    }
 
+    void ResetElements()
+    {
+        Player.Instance.Reset(); // need to be done before camera
+        CameraFollow.Instance.SetForMenu();
+        FloorManager.Instance.Reset();
+    }
 
-   public void ShowGameMenu()
-   {
-      menuUIHolder.SetActive(false);
-      gameUIHolder.SetActive(true);
-      lateHolder.SetActive(false);
-   }
-   
-   public void OnPlayClick()
-   {
-      GameManager.Instance.StartAnotherGame();
-   }
+    public void ShowMenu(bool init)
+    {
+        menuUIHolder.SetActive(true);
+        gameUIHolder.SetActive(false);
+
+        ResetMenuUI();
+
+        _menuSeq?.Kill();
+
+        var buttonsDuration = 0.35f;
+        var buttonsTime = 3;
+        var buttonOffset = 0.07f;
+
+        _menuSeq = DOTween.Sequence()
+            .Insert(1, lateHolder.DOFade(1, 1f))
+            .Insert(buttonsTime + buttonOffset*0.5f * 0, buttonHolder1.DOFade(1, buttonsDuration))
+            .Insert(buttonsTime + buttonOffset*0.5f * 1, buttonHolder2.DOFade(1, buttonsDuration))
+            .Insert(buttonsTime + buttonOffset*0.5f * 2, buttonHolder3.DOFade(1, buttonsDuration))
+            .Insert(buttonsTime + buttonOffset*0.5f * 3, buttonHolder4.DOFade(1, buttonsDuration))
+            .Insert(buttonsTime + buttonOffset * 0, buttonHolder1.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
+            .Insert(buttonsTime + buttonOffset * 1, buttonHolder2.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
+            .Insert(buttonsTime + buttonOffset * 2, buttonHolder3.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
+            .Insert(buttonsTime + buttonOffset * 3, buttonHolder4.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
+            .InsertCallback(buttonsTime, ResetElements);
+    }
+
+    public void ShowGameMenu()
+    {
+        menuUIHolder.SetActive(false);
+        gameUIHolder.SetActive(true);
+        lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
+    }
+
+    public void OnPlayClick()
+    {
+        _menuSeq?.Kill();
+        ResetElements();
+        GameManager.Instance.StartAnotherGame();
+    }
 }
