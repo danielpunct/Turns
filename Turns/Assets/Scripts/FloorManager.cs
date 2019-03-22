@@ -181,13 +181,6 @@ public class FloorManager : Singleton<FloorManager>
                 return direction.ToAction();
             }
 
-            if (Game.Instance.IsStarted)
-            {
-                // if first current tile is not the corner, player dies
-                //Game.Instance.PlayerDie();
-                // continue to find next operation to execute even if dieing
-            }
-
             tile = tile.Next;
         }
 
@@ -205,7 +198,7 @@ public class FloorManager : Singleton<FloorManager>
             var holeAllowed = 
                 _nextHoleBuffer <= -Game.Instance.HolesMinDistance &&
                 _nextDirChangeBuffer <= -1 &&
-                _nextStairsBuffer <= 0;
+                _nextStairsBuffer <= -1;
             var stairsAllowed = 
                 _nextStairsBuffer <= -Game.Instance.StairsMinDistance &&
                 _nextDirChangeBuffer <= -1 &&
@@ -215,7 +208,7 @@ public class FloorManager : Singleton<FloorManager>
             _nextHoleBuffer--;
             _nextStairsBuffer--;
             
-            if (Random.Range(0, Game.Instance.StateChangeProbability) == 0) // if change state
+            if (Random.Range(0, Game.Instance.StateChangeChances) == 0) // if change state
             {
                 if (holeAllowed && Utils.GetRand100Pondere(Game.Instance.HoleChangePondere)) // if do hole
                 {

@@ -17,7 +17,7 @@ public class Game : Singleton<Game>
     public float fastestTilePassTime = 0.1f;
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1; // initial player wait
-    public int StateChangeProbability = 7;
+    public int StateChangeChances = 7;
     [Range(0,100)]
     public int HoleChangePondere = 50;
     [Range(0,100)]

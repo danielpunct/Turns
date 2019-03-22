@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using DG.Tweening;
 using Gamelogic.Extensions;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
+   [Header("Menu")] 
+   public GameObject menuUIHolder;
    public GameObject lateHolder;
+
+   [Header("Game")]
+   public GameObject gameUIHolder;
 
    void Awake()
    {
       lateHolder.transform.localScale = Vector3.zero;
    }
 
-   public void Show(bool init)
+   public void ShowMenu(bool init)
    {
-      gameObject.SetActive(true);
-      StartCoroutine(ShowLate(init));
+      menuUIHolder.SetActive(true);
+      gameUIHolder.SetActive(false);
+      StartCoroutine(ShowLateUIHolder(init));
    }
 
-   IEnumerator ShowLate(bool init)
+   IEnumerator ShowLateUIHolder(bool init)
    {
       if (!init)
       {
@@ -35,9 +42,10 @@ public class Menu : Singleton<Menu>
    }
 
 
-   public void Hide()
+   public void ShowGameMenu()
    {
-      gameObject.SetActive(false);
+      menuUIHolder.SetActive(false);
+      gameUIHolder.SetActive(true);
       lateHolder.SetActive(false);
    }
    
