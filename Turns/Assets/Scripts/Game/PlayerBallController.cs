@@ -1,7 +1,10 @@
+using Gamelogic.Extensions;
 using UnityEngine;
 
 public class PlayerBallController : MonoBehaviour
 {
+    public GameObject[] ballPrefabs;
+    
     public Transform model;
     
     void Update()
@@ -13,5 +16,16 @@ public class PlayerBallController : MonoBehaviour
             var rotationSpeed = Player.Instance.Speed * 100;
             model.Rotate( right * rotationSpeed, Space.World);
         }
+    }
+
+    void Start()
+    {
+        LoadModel(0);
+    }
+
+    public void LoadModel(int index)
+    {
+        model.DestroyChildren();
+        Instantiate(ballPrefabs[index], model);
     }
 }

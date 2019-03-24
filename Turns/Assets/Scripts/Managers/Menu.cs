@@ -8,10 +8,12 @@ using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
-    public TMP_Text movesText;
 
     [Header("Menu")] public GameObject menuUIHolder;
+    public TMP_Text titleText;
     public CanvasGroup lateHolder;
+    public GameObject elementsMain;
+    public GameObject elementsSkins;
     public CanvasGroup buttonHolder1;
     public CanvasGroup buttonHolder2;
     public CanvasGroup buttonHolder3;
@@ -32,6 +34,8 @@ public class Menu : Singleton<Menu>
 
     void ResetMenuUI()
     {
+        elementsMain.SetActive(true);
+        elementsSkins.SetActive(false);
         lateHolder.gameObject.SetActive(true);
         lateHolder.alpha = 0;
         buttonHolder1.alpha = 0;
@@ -44,6 +48,7 @@ public class Menu : Singleton<Menu>
         buttonHolder3.transform.DOLocalMoveY(-40, 0);
         buttonHolder4.transform.DOLocalMoveY(-40, 0);
         skins.transform.DOLocalMoveX(1400, 0);
+        titleText.DOFade(0, 0);
         
         skinButtonsHolder.SetActive(false);
     }
@@ -62,13 +67,12 @@ public class Menu : Singleton<Menu>
 
         ResetMenuUI();
 
-
         _menuSeq?.Kill();
         _menuSeq = DOTween.Sequence()
+            .Insert(init ? 1 : 3, titleText.DOFade(1, 3))
             .Insert(1, lateHolder.DOFade(1, 1f))
-            .InsertCallback(init ? 0 : 3, ResetElements)
-            .InsertCallback((init ? 0 : 3) + Player.Instance.playerPresentOffset,
-                () => { skinButtonsHolder.SetActive(true); });
+            .InsertCallback(init ? 0 : 2, ResetElements)
+            .InsertCallback((init ? 0 : 3) + Player.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
 
         switchButtons(_menuSeq, init ? 1 : 3, true, false);
     }
@@ -90,7 +94,6 @@ public class Menu : Singleton<Menu>
 
     public void UpdateUI()
     {
-        movesText.text = Game.Instance.MovesMade.ToString();
         if (Game.Instance.IsStarted)
         {
             progress.Display();
@@ -106,14 +109,16 @@ public class Menu : Singleton<Menu>
 
         if (on)
         {
-            skinButtonsHolder.SetActive(false);
+            elementsSkins.SetActive(true);
+            elementsMain.SetActive(false);
             switchButtons(_skinsSeq, 0, false, true);
             CameraFollow.Instance.SetForSkins();
         }
         else
         {
-            skinButtonsHolder.SetActive(true);
-            ShowMenu(true);
+            elementsSkins.SetActive(false);
+            elementsMain.SetActive(true);
+            switchButtons(_menuSeq, 3, true, false);
             CameraFollow.Instance.SetForMenu();
         }
     }
