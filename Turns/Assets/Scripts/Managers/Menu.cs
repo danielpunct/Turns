@@ -2,20 +2,26 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using Gamelogic.Extensions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
-    [Header("Menu")] public GameObject menuUIHolder;
+    public TMP_Text movesText;
+
+    [Header("Menu")] 
+    public GameObject menuUIHolder;
     public CanvasGroup lateHolder;
     public CanvasGroup buttonHolder1;
     public CanvasGroup buttonHolder2;
     public CanvasGroup buttonHolder3;
     public CanvasGroup buttonHolder4;
 
-    [Header("Game")] public GameObject gameUIHolder;
-
+    [Header("Game")] 
+    public GameObject gameUIHolder;
+    public Progress progress;
+    
     Sequence _menuSeq;
 
     void Awake()
@@ -55,7 +61,7 @@ public class Menu : Singleton<Menu>
         _menuSeq?.Kill();
 
         var buttonsDuration = 0.35f;
-        var buttonsTime = 3;
+        var buttonsTime = init ? 0 : 3;
         var buttonOffset = 0.07f;
 
         _menuSeq = DOTween.Sequence()
@@ -84,4 +90,17 @@ public class Menu : Singleton<Menu>
         ResetElements();
         GameManager.Instance.StartAnotherGame();
     }
+    
+    
+    public void UpdateUI()
+    {
+        movesText.text = Game.Instance.MovesMade.ToString();
+        if (Game.Instance.IsStarted)
+        {
+            progress.Display();
+        }
+        
+    }
+    
+    
 }

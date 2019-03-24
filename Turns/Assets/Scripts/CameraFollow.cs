@@ -27,7 +27,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         seq?.Kill();
         seq = DOTween.Sequence()
-            .Insert(0, transform.DOMove(player.position, 0.6f).SetEase(Ease.OutExpo))
+            .Insert(0, transform.DOMove(player.position, Player.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
             .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
     }
 

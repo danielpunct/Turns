@@ -24,7 +24,7 @@ public class Game : Singleton<Game>
     public int StairePondere = 50;
 
     public int MaxStage = 10;
-    public int TilesInStage = 4;
+    public int MovesInStage = 4;
     public int DirChageMinDistance = 1;
     public int HoleLength = 2;
     public int HolesMinDistance = 2;
@@ -33,15 +33,15 @@ public class Game : Singleton<Game>
     public int MovesMade { get; private set; }
 
     float _startTime;
-    int stage = 0;
+    public int Stage { get; private set; }
 
     public float TilePassTime =>
-        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - stage) / (float) MaxStage);
+        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - Stage) / (float) MaxStage);
 
     public void Reset()
     {
         MovesMade = 0;
-        stage = 0;
+        Stage = 0;
         FloorManager.Instance.Reset();
         Player.Instance.Reset();
     }
@@ -75,8 +75,8 @@ public class Game : Singleton<Game>
 
             OperationsManager.Instance.DoNextAction();
             MovesMade++;
-            GameManager.Instance.UpdateUI();
-            stage = MovesMade / TilesInStage;
+            Stage = MovesMade / MovesInStage;
+            Menu.Instance.UpdateUI();
         }
     }
 

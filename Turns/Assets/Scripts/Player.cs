@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 
 public class Player : Singleton<Player>
 {
+    public float playerPresentOffset = 0.7f;
     public GameObject apearParticleSystem;
     public GameObject lightLandParticleSystem;
     public Transform graphicHolder;
@@ -82,7 +83,7 @@ public class Player : Singleton<Player>
 
         _seq?.Kill();
         _seq = DOTween.Sequence()
-            .Insert(0.5f, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack));
+            .Insert(playerPresentOffset, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack));
     }
 
     public void Play()
@@ -190,6 +191,11 @@ public class Player : Singleton<Player>
         if (tile != null)
         {
             lastSteppedTile = tile;
+            
+            if (tile.IsHole && !IsJumping)
+            {
+                Game.Instance.PlayerDie();
+            }
         }
 
         if (Game.Instance.IsStarted && lastSteppedTile != null)
@@ -198,6 +204,8 @@ public class Player : Singleton<Player>
             {
                 Game.Instance.PlayerDie();
             }
+
+           
         }
     }
 }
