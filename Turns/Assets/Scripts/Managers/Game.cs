@@ -68,10 +68,11 @@ public class Game : Singleton<Game>
         if (Player.Instance.IsRunning && !Player.Instance.IsJumping)
         {
             var tile = FloorManager.Instance.PeekTile(Player.Instance.CurrentTilePosition.Value);
-            if (tile.IsHole)
+            if (tile == null || tile.IsHole)
             {
                 return;
             }
+
             OperationsManager.Instance.DoNextAction();
             MovesMade++;
             GameManager.Instance.UpdateUI();

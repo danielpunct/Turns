@@ -13,7 +13,7 @@ public class CameraFollow : Singleton<CameraFollow>
     public float followMultiplier = 4;
     public Transform player;
 
-    Tween cTween;
+    Sequence seq;
     
     void FixedUpdate()
     {
@@ -25,16 +25,16 @@ public class CameraFollow : Singleton<CameraFollow>
 
     public void SetForMenu()
     {
-        cTween?.Kill();
-        transform.position = player.position;
-//        transform.DOMove( player.position, 0.1f).SetEase(Ease.OutExpo);
-        cTween = cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack);
+        seq?.Kill();
+        seq = DOTween.Sequence()
+            .Insert(0, transform.DOMove(player.position, 0.6f).SetEase(Ease.OutExpo))
+            .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
     }
 
     public void SetForGame()
     {
-        cTween?.Kill();
-        
-        cTween = cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack);
+        seq?.Kill();
+        seq = DOTween.Sequence()
+            .Insert(0, cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
     }
 }

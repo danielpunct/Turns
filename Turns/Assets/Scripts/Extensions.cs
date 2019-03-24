@@ -23,6 +23,11 @@ using UnityEngine;
 
             return OperationsManager.PlayerAction.None;
         }
+
+        public static Vector3 ToVector3(this Vector3Int v)
+        {
+            return  new Vector3(v.x, v.y, v.z);
+        }
     }
 
     public static class VectorInt

@@ -39,8 +39,6 @@ public class Player : Singleton<Player>
             return;
         }
 
-       
-
         // is falling to it's death for too long
         if (!Game.Instance.IsStarted && IsFalling && Time.unscaledTime - _startDieTime > 6)
         {
@@ -72,15 +70,19 @@ public class Player : Singleton<Player>
         //PlayerController.Instance.Reset();
 
         _rb.isKinematic = true;
-        _tr.localPosition = Vector3.up * 2f;
         CurrentTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
         _rb.rotation = Quaternion.identity;
         _tr.rotation = Quaternion.identity;
         Direction = VectorInt.forward;
-        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        //_rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         apearParticleSystem.SetActive(false);
+        _tr.localPosition = Vector3.up * 2f;
+        _tr.localScale = Vector3.zero;
 
+        _seq?.Kill();
+        _seq = DOTween.Sequence()
+            .Insert(0.5f, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack));
     }
 
     public void Play()
@@ -88,7 +90,7 @@ public class Player : Singleton<Player>
         _seq?.Kill();
 
         _seq = DOTween.Sequence()
-            .Insert(0, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
+            .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
             .InsertCallback(0.4f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
@@ -127,7 +129,7 @@ public class Player : Singleton<Player>
         jumpBuffer = Game.Instance.HoleLength;
         IsJumping = true;
         
-        _rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ ;
+        _rb.constraints = RigidbodyConstraints.FreezePositionY;// | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ ;
         
         _seq?.Kill();
         var duration = Game.Instance.TilePassTime * (0.25f + Game.Instance.HoleLength / 2f);
