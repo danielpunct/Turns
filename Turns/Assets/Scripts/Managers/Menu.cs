@@ -10,19 +10,20 @@ public class Menu : Singleton<Menu>
 {
     public TMP_Text movesText;
 
-    [Header("Menu")] 
-    public GameObject menuUIHolder;
+    [Header("Menu")] public GameObject menuUIHolder;
     public CanvasGroup lateHolder;
     public CanvasGroup buttonHolder1;
     public CanvasGroup buttonHolder2;
     public CanvasGroup buttonHolder3;
     public CanvasGroup buttonHolder4;
+    public Skins skins;
+    public GameObject skinButtonsHolder;
 
-    [Header("Game")] 
-    public GameObject gameUIHolder;
+    [Header("Game")] public GameObject gameUIHolder;
     public Progress progress;
-    
+
     Sequence _menuSeq;
+    Sequence _skinsSeq;
 
     void Awake()
     {
@@ -42,6 +43,9 @@ public class Menu : Singleton<Menu>
         buttonHolder2.transform.DOLocalMoveY(-40, 0);
         buttonHolder3.transform.DOLocalMoveY(-40, 0);
         buttonHolder4.transform.DOLocalMoveY(-40, 0);
+        skins.transform.DOLocalMoveX(1400, 0);
+        
+        skinButtonsHolder.SetActive(false);
     }
 
     void ResetElements()
@@ -58,23 +62,15 @@ public class Menu : Singleton<Menu>
 
         ResetMenuUI();
 
+
         _menuSeq?.Kill();
-
-        var buttonsDuration = 0.35f;
-        var buttonsTime = init ? 0 : 3;
-        var buttonOffset = 0.07f;
-
         _menuSeq = DOTween.Sequence()
             .Insert(1, lateHolder.DOFade(1, 1f))
-            .Insert(buttonsTime + buttonOffset*0.5f * 0, buttonHolder1.DOFade(1, buttonsDuration))
-            .Insert(buttonsTime + buttonOffset*0.5f * 1, buttonHolder2.DOFade(1, buttonsDuration))
-            .Insert(buttonsTime + buttonOffset*0.5f * 2, buttonHolder3.DOFade(1, buttonsDuration))
-            .Insert(buttonsTime + buttonOffset*0.5f * 3, buttonHolder4.DOFade(1, buttonsDuration))
-            .Insert(buttonsTime + buttonOffset * 0, buttonHolder1.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
-            .Insert(buttonsTime + buttonOffset * 1, buttonHolder2.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
-            .Insert(buttonsTime + buttonOffset * 2, buttonHolder3.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
-            .Insert(buttonsTime + buttonOffset * 3, buttonHolder4.transform.DOLocalMoveY(0, buttonsDuration).SetEase(Ease.OutBack))
-            .InsertCallback(buttonsTime, ResetElements);
+            .InsertCallback(init ? 0 : 3, ResetElements)
+            .InsertCallback((init ? 0 : 3) + Player.Instance.playerPresentOffset,
+                () => { skinButtonsHolder.SetActive(true); });
+
+        switchButtons(_menuSeq, init ? 1 : 3, true, false);
     }
 
     public void ShowGameMenu()
@@ -90,8 +86,8 @@ public class Menu : Singleton<Menu>
         ResetElements();
         GameManager.Instance.StartAnotherGame();
     }
-    
-    
+
+
     public void UpdateUI()
     {
         movesText.text = Game.Instance.MovesMade.ToString();
@@ -99,8 +95,50 @@ public class Menu : Singleton<Menu>
         {
             progress.Display();
         }
-        
     }
-    
-    
+
+
+    public void ShitchSkinsUI(bool on)
+    {
+        _skinsSeq?.Kill();
+        _skinsSeq = DOTween.Sequence()
+            .Insert(0, skins.transform.DOLocalMoveX(on ? 0 : 1400, 0.1f));
+
+        if (on)
+        {
+            skinButtonsHolder.SetActive(false);
+            switchButtons(_skinsSeq, 0, false, true);
+            CameraFollow.Instance.SetForSkins();
+        }
+        else
+        {
+            skinButtonsHolder.SetActive(true);
+            ShowMenu(true);
+            CameraFollow.Instance.SetForMenu();
+        }
+    }
+
+    void switchButtons(Sequence seq, float offset, bool on, bool farther)
+    {
+        const float buttonsDuration = 0.35f;
+        var eachOffset = on ? 0.07f : 0;
+        var fadeoffset = on ? 0 : buttonsDuration / 2f;
+
+        seq.Insert(offset + fadeoffset + eachOffset * 0.5f * 0, buttonHolder1.DOFade(on ? 1 : 0, buttonsDuration))
+            .Insert(offset + fadeoffset + eachOffset * 0.5f * 1, buttonHolder2.DOFade(on ? 1 : 0, buttonsDuration))
+            .Insert(offset + fadeoffset + eachOffset * 0.5f * 2, buttonHolder3.DOFade(on ? 1 : 0, buttonsDuration))
+            .Insert(offset + fadeoffset + eachOffset * 0.5f * 3, buttonHolder4.DOFade(on ? 1 : 0, buttonsDuration))
+            .Insert(offset + eachOffset * 0,
+                buttonHolder1.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
+                    .SetEase(Ease.OutBack))
+            .Insert(offset + eachOffset * 1,
+                buttonHolder2.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
+                    .SetEase(Ease.OutBack))
+            .Insert(offset + eachOffset * 2,
+                buttonHolder3.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
+                    .SetEase(Ease.OutBack))
+            .Insert(offset + eachOffset * 3,
+                buttonHolder4.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
+                    .SetEase(Ease.OutBack));
+    }
 }
