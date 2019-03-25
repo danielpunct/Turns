@@ -6,11 +6,13 @@ using UnityEngine;
 public class FloorManager : Singleton<FloorManager>
 {
     public Transform tilesHolder;
-
+    public int TilesPassed { get; private set; }
+    
     Dictionary<Vector3Int, FloorTile> _tilesDict;
     LinkedList<FloorTile> _tiles;
     Vector3Int _currentDirection = VectorInt.forward;
     int passTileBufffer;
+    
     
     // --- NEXT TILE STATE --- 
     Vector3Int _nextTilePosition = Vector3Int.zero;
@@ -28,6 +30,7 @@ public class FloorManager : Singleton<FloorManager>
         _nextHoleBuffer = 0;
         _nextDirChangeBuffer = 0;
         _nextStairsBuffer = 0;
+        TilesPassed = 0;
     }
 
     public void Play()
@@ -59,6 +62,8 @@ public class FloorManager : Singleton<FloorManager>
         {
             return;
         }
+
+        TilesPassed++;
 
         var lastTile = DeregisterFirstTile();
 

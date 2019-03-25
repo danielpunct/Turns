@@ -6,13 +6,16 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-
+    public PlayerState Player;
+    
     void Start()
     {
         Application.targetFrameRate = 60;
         Game.Instance.Reset();
         Menu.Instance.ShowMenu(true);
         Menu.Instance.UpdateUI();
+        Player = new PlayerState();
+        Player.Load();
     }
 
 
@@ -25,6 +28,7 @@ public class GameManager : Singleton<GameManager>
 
     public void GameOver()
     {
+        Player.Save();
         Menu.Instance.ShowMenu(false);
     }
 }

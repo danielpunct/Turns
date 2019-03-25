@@ -12,13 +12,15 @@ public class FloorTile : MonoBehaviour
     public MeshRenderer mesh;
     public Collider coll;
 
+    Sequence seq;
 
     float appearDuration => Game.Instance.TilePassTime * 1.5f;
 
 
     public void Dissapear()
     {
-        DOTween.Sequence()
+        seq?.Kill();
+        seq = DOTween.Sequence()
             .Append(transform.DOScale(0, appearDuration))
             .AppendCallback(() => { PoolManager.Instance.TilesPool.Despawn(gameObject); });
     }
@@ -36,7 +38,9 @@ public class FloorTile : MonoBehaviour
         if (!isHole)
         {
             transform.localScale = Vector3.zero;
-            transform.DOScale(1, appearDuration);
+            seq?.Kill();
+            seq = DOTween.Sequence()
+                .Append(transform.DOScale(1, appearDuration));
         }
         else
         {

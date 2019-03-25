@@ -31,9 +31,17 @@ public class Game : Singleton<Game>
     public int StairsLength = 2;
     public int StairsMinDistance = 2;
     public int MovesMade { get; private set; }
+    [ReadOnly]
+    public Vector3 DefaultGravity;
 
     float _startTime;
     public int Stage { get; private set; }
+    public int lastInteractionMove = 0;
+
+    void Awake()
+    {
+        DefaultGravity = Physics.gravity;
+    }
 
     public float TilePassTime =>
         Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - Stage) / (float) MaxStage);
@@ -41,9 +49,10 @@ public class Game : Singleton<Game>
     public void Reset()
     {
         MovesMade = 0;
+        lastInteractionMove = -10;
         Stage = 0;
         FloorManager.Instance.Reset();
-        Player.Instance.Reset();
+        Runner.Instance.Reset();
     }
 
     public void Play()
@@ -57,7 +66,7 @@ public class Game : Singleton<Game>
     IEnumerator BeginAfterCountdown()
     {
         FloorManager.Instance.Play();
-        Player.Instance.Play();
+        Runner.Instance.Play();
         CameraFollow.Instance.SetForGame();
         yield return new WaitForSeconds(0.6f);
         _startTime = Time.fixedTime;
@@ -65,24 +74,34 @@ public class Game : Singleton<Game>
 
     public void UserTap()
     {
-        if (Player.Instance.IsRunning && !Player.Instance.IsJumping)
+        if (FloorManager.Instance.TilesPassed - lastInteractionMove < 2)
         {
-            var tile = FloorManager.Instance.PeekTile(Player.Instance.CurrentTilePosition.Value);
+            return;
+        }
+
+        lastInteractionMove = FloorManager.Instance.TilesPassed;
+        
+        if (Runner.Instance.IsRunning && !Runner.Instance.IsJumping )
+        {
+            var tile = FloorManager.Instance.PeekTile(Runner.Instance.CurrentTilePosition.Value);
             if (tile == null || tile.IsHole)
             {
-                return;
+                Debug.Log(tile == null ? "nul ": " hole");
+                //return;
             }
 
             OperationsManager.Instance.DoNextAction();
             MovesMade++;
             Stage = MovesMade / MovesInStage;
             Menu.Instance.UpdateUI();
+            Physics.gravity = DefaultGravity * 1 / TilePassTime;
         }
     }
 
     public void PlayerDie()
     {
-        Player.Instance.SlowDownAndDie();
+        GameManager.Instance.Player.LogRunningTime(Time.fixedTime - _startTime, FloorManager.Instance.TilesPassed);
+        Runner.Instance.SlowDownAndDie();
         GameManager.Instance.GameOver();
         IsStarted = false;
     }

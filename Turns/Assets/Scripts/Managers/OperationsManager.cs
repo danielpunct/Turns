@@ -22,24 +22,24 @@ public class OperationsManager : Singleton<OperationsManager>
         switch (pendingAction)
         {
             case PlayerAction.None:
-                Player.Instance.ChangeDirection( FloorManager.Instance.GetChangedRandomDirection(Player.Instance.Direction));
+                Runner.Instance.ChangeDirection( FloorManager.Instance.GetChangedRandomDirection(Runner.Instance.Direction));
                 break;
             case PlayerAction.Back:
             case PlayerAction.Forward:
             case PlayerAction.Left:
             case PlayerAction.Right:
-                Player.Instance.ChangeDirection( VectorInt.fromPlayerAction(pendingAction));
+                Runner.Instance.ChangeDirection( VectorInt.fromPlayerAction(pendingAction));
                 break;
             case PlayerAction.Jump:
-                Player.Instance.Jump();
+                Runner.Instance.Jump();
                 break;
         }
     }
 
     PlayerAction GetPendingAction()
     {
-        var playerTile = Player.Instance.CurrentTilePosition;
-        var playerDirection = Player.Instance.Direction;
+        var playerTile = Runner.Instance.CurrentTilePosition;
+        var playerDirection = Runner.Instance.Direction;
 
         var pendingAction = PlayerAction.None;
         

@@ -55,7 +55,7 @@ public class Menu : Singleton<Menu>
 
     void ResetElements()
     {
-        Player.Instance.Reset(); // need to be done before camera
+        Runner.Instance.Reset(); // need to be done before camera
         CameraFollow.Instance.SetForMenu();
         FloorManager.Instance.Reset();
     }
@@ -72,7 +72,7 @@ public class Menu : Singleton<Menu>
             .Insert(init ? 1 : 3, titleText.DOFade(1, 3))
             .Insert(1, lateHolder.DOFade(1, 1f))
             .InsertCallback(init ? 0 : 2, ResetElements)
-            .InsertCallback((init ? 0 : 3) + Player.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
+            .InsertCallback((init ? 0 : 3) + Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
 
         switchButtons(_menuSeq, init ? 1 : 3, true, false);
     }

@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class Player : Singleton<Player>
+public class Runner : Singleton<Runner>
 {
     public float playerPresentOffset = 0.7f;
     public GameObject apearParticleSystem;
@@ -23,7 +23,6 @@ public class Player : Singleton<Player>
     FloorTile lastSteppedTile = null;
     float _startDieTime;
     Sequence _seq;
-    int jumpBuffer;
 
     bool FallingInTheBeginning => IsFalling && Game.Instance.IsStarted;
 
@@ -53,7 +52,7 @@ public class Player : Singleton<Player>
             
         }
 
-        if (!IsFalling)
+        if (IsRunning && !IsFalling)
         {
             CheckTilePosition();
         }
@@ -65,7 +64,6 @@ public class Player : Singleton<Player>
         IsRunning = false;
         IsFalling = false;
         IsJumping = false;
-        jumpBuffer = 0;
         
         //If human player
         //PlayerController.Instance.Reset();
@@ -76,7 +74,7 @@ public class Player : Singleton<Player>
         _rb.rotation = Quaternion.identity;
         _tr.rotation = Quaternion.identity;
         Direction = VectorInt.forward;
-        //_rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         apearParticleSystem.SetActive(false);
         _tr.localPosition = Vector3.up * 2f;
         _tr.localScale = Vector3.zero;
@@ -94,7 +92,7 @@ public class Player : Singleton<Player>
 
         _seq = DOTween.Sequence()
             .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
-            .InsertCallback(0.4f, ShowParticles_Land)
+            .InsertCallback(0.5f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
                 IsRunning = true;
@@ -124,29 +122,53 @@ public class Player : Singleton<Player>
         Direction = newDirection;
 
         var eulerRotation = Quaternion.LookRotation(Direction, Vector3.up).eulerAngles;
+        _rb.velocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
         _rb.DORotate(eulerRotation, 0.4f).SetEase(Ease.OutBack);
     }
 
+    
     public void Jump()
     {
-        jumpBuffer = Game.Instance.HoleLength;
+        lifted = false;
         IsJumping = true;
-        
-        _rb.constraints = RigidbodyConstraints.FreezePositionY;// | RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ ;
-        
-        _seq?.Kill();
-        var duration = Game.Instance.TilePassTime * (0.25f + Game.Instance.HoleLength / 2f);
-        var height = 1 * Game.Instance.HoleLength / 2f;
-        _seq = DOTween.Sequence()
-            .Insert(0, graphicHolder.DOLocalMoveY(height, duration).SetEase(Ease.OutCubic))
-            .Insert(duration, graphicHolder.DOLocalMoveY(0, duration).SetEase(Ease.InCubic))
-            .InsertCallback(duration * 2, ShowParticles_LightLand);
+
+        _rb.AddForce(-Game.Instance.DefaultGravity * 8);
+
+    }
+    
+    
+    float m_GroundCheckDistance = 0.1f;
+    bool lifted = false;
+    bool CheckGroundStatus(bool afterStartJump)
+    {
+        RaycastHit hitInfo;
+#if UNITY_EDITOR
+        // helper to visualise the ground check ray in the scene view
+        Debug.DrawLine(transform.position , transform.position + (Vector3.down * m_GroundCheckDistance));
+#endif
+        // 0.1f is a small offset to start the ray from inside the character
+        // it is also good to note that the transform position in the sample assets is at the base of the character
+        if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, m_GroundCheckDistance))
+        {
+            if (afterStartJump && !lifted)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            lifted = true;
+            return false;
+        }
+
+        return true;
     }
 
     public void JumpFinished()
     {
         IsJumping = false;
-        _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        ShowParticles_LightLand();
     }
 
     public void SlowDownAndDie()
@@ -165,6 +187,15 @@ public class Player : Singleton<Player>
 
     void CheckTilePosition()
     {
+        if (IsJumping)
+        {
+            if (CheckGroundStatus(true))
+            {
+                JumpFinished();
+            }
+        }
+        
+        
         var pos = _tr.localPosition;
         
         var tilePosition = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
@@ -181,10 +212,7 @@ public class Player : Singleton<Player>
         if (CurrentTilePosition != null && tilePosition != CurrentTilePosition)
         {
             FloorManager.Instance.OnPlayerPassedTile();
-            if (jumpBuffer-- <= 0)
-            {
-                JumpFinished();
-            }
+           
         }
 
         CurrentTilePosition = tilePosition;
@@ -206,8 +234,6 @@ public class Player : Singleton<Player>
             {
                 Game.Instance.PlayerDie();
             }
-
-           
         }
     }
 }

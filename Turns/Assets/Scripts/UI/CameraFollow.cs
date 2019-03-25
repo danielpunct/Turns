@@ -20,7 +20,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         if (Game.Instance.IsStarted)
         {
-            transform.position = Vector3.Lerp(transform.position, player.position, Player.Instance.IsRunning ? Time.fixedDeltaTime * followMultiplier : 1);
+            transform.position = Vector3.Lerp(transform.position, player.position, Runner.Instance.IsRunning ? Time.fixedDeltaTime * followMultiplier : 1);
         }
     }
 
@@ -28,7 +28,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         seq?.Kill();
         seq = DOTween.Sequence()
-            .Insert(0, transform.DOMove(player.position, Player.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
+            .Insert(0, transform.DOMove(player.position, Runner.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
             .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
     }
 

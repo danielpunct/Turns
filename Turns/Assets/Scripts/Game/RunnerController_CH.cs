@@ -1,7 +1,7 @@
 ﻿using Gamelogic.Extensions;
 using UnityEngine;
 
-public class PlayerController : Singleton<PlayerController>
+public class RunnerController_CH : Singleton<RunnerController_CH>
 {
    public Animator _anim;
    public Rigidbody _rb;
@@ -25,14 +25,14 @@ public class PlayerController : Singleton<PlayerController>
 
    void Update()
    {
-      if (Player.Instance.IsFalling)
+      if (Runner.Instance.IsFalling)
       {
          m_IsGrounded = false;
       }
 
-      if (Player.Instance.IsRunning)
+      if (Runner.Instance.IsRunning)
       {
-         m_ForwardAmount = Player.Instance.Speed * 10;
+         m_ForwardAmount = Runner.Instance.Speed * 10;
          m_GroundCheckDistance = 0.1f;
          
          
@@ -44,7 +44,7 @@ public class PlayerController : Singleton<PlayerController>
          HandleAirborneMovement();
       }
 
-      if (Player.Instance.IsRunning || Player.Instance.IsFalling)
+      if (Runner.Instance.IsRunning || Runner.Instance.IsFalling)
       {
          UpdateAnimator();
       }

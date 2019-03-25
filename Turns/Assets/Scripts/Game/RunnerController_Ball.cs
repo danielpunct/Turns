@@ -1,20 +1,20 @@
 using Gamelogic.Extensions;
 using UnityEngine;
 
-public class PlayerBallController : MonoBehaviour
+public class RunnerController_Ball : MonoBehaviour
 {
     public GameObject[] ballPrefabs;
     
     public Transform model;
-    
+
     void Update()
     {
-        if (Player.Instance.IsRunning)
+        if (Runner.Instance.IsRunning)
         {
-            var dir = Player.Instance.Direction.ToVector3();
+            var dir = Runner.Instance.Direction.ToVector3();
             var right = new Vector3(dir.z, dir.y, -dir.x);
-            var rotationSpeed = Player.Instance.Speed * 100;
-            model.Rotate( right * rotationSpeed, Space.World);
+            var rotationSpeed = Runner.Instance.Speed * 100;
+            model.Rotate(right * rotationSpeed, Space.World);
         }
     }
 
