@@ -20,6 +20,7 @@ public class Menu : Singleton<Menu>
     public CanvasGroup buttonHolder4;
     public Skins skins;
     public GameObject skinButtonsHolder;
+    public TMP_Text bestRunText;
 
     [Header("Game")] public GameObject gameUIHolder;
     public Progress progress;
@@ -27,7 +28,7 @@ public class Menu : Singleton<Menu>
     Sequence _menuSeq;
     Sequence _skinsSeq;
 
-    void Awake()
+    void Start()
     {
         ResetMenuUI();
     }
@@ -51,6 +52,7 @@ public class Menu : Singleton<Menu>
         titleText.DOFade(0, 0);
         
         skinButtonsHolder.SetActive(false);
+        bestRunText.text = "Best Run : " + GameManager.Instance.Player.MaxMoves;
     }
 
     void ResetElements()

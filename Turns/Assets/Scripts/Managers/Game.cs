@@ -100,7 +100,7 @@ public class Game : Singleton<Game>
 
     public void PlayerDie()
     {
-        GameManager.Instance.Player.LogRunningTime(Time.fixedTime - _startTime, FloorManager.Instance.TilesPassed);
+        GameManager.Instance.Player.SaveRun(MovesMade, Time.fixedTime - _startTime, FloorManager.Instance.TilesPassed);
         Runner.Instance.SlowDownAndDie();
         GameManager.Instance.GameOver();
         IsStarted = false;
