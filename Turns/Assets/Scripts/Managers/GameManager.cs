@@ -18,7 +18,6 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        Game.Instance.Reset();
         Menu.Instance.ShowMenu(true);
         Menu.Instance.UpdateUI();
     }

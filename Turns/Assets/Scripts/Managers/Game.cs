@@ -51,8 +51,6 @@ public class Game : Singleton<Game>
         MovesMade = 0;
         lastInteractionMove = -10;
         Stage = 0;
-        FloorManager.Instance.Reset();
-        Runner.Instance.Reset();
     }
 
     public void Play()
@@ -83,11 +81,10 @@ public class Game : Singleton<Game>
         
         if (Runner.Instance.IsRunning && !Runner.Instance.IsJumping )
         {
-            var tile = FloorManager.Instance.PeekTile(Runner.Instance.CurrentTilePosition.Value);
+            var tile = FloorManager.Instance.PeekTile(Runner.Instance.LastTilePosition.Value);
             if (tile == null || tile.IsHole)
             {
                 Debug.Log(tile == null ? "nul ": " hole");
-                //return;
             }
 
             OperationsManager.Instance.DoNextAction();
@@ -98,10 +95,10 @@ public class Game : Singleton<Game>
         }
     }
 
-    public void PlayerDie()
+    public void PlayerDie(Vector3Int? awayDirection = null)
     {
         GameManager.Instance.Player.SaveRun(MovesMade, Time.fixedTime - _startTime, FloorManager.Instance.TilesPassed);
-        Runner.Instance.SlowDownAndDie();
+        Runner.Instance.SlowDownAndDie(awayDirection);
         GameManager.Instance.GameOver();
         IsStarted = false;
     }

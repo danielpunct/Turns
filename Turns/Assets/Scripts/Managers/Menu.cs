@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Gamelogic.Extensions;
@@ -8,11 +9,13 @@ using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
-
+    public ColorSuite cameraColorSuite;
+    
     [Header("Menu")] public GameObject menuUIHolder;
     public TMP_Text titleText;
     public CanvasGroup lateHolder;
     public GameObject elementsMain;
+    public GameObject elementsAfterDie;
     public GameObject elementsSkins;
     public CanvasGroup buttonHolder1;
     public CanvasGroup buttonHolder2;
@@ -21,12 +24,15 @@ public class Menu : Singleton<Menu>
     public Skins skins;
     public GameObject skinButtonsHolder;
     public TMP_Text bestRunText;
+    public TMP_Text lastMovesText;
+    public TMP_Text lastTimeText;
 
     [Header("Game")] public GameObject gameUIHolder;
     public Progress progress;
 
     Sequence _menuSeq;
     Sequence _skinsSeq;
+    Sequence _2ndMenuSeq;
 
     void Start()
     {
@@ -35,7 +41,6 @@ public class Menu : Singleton<Menu>
 
     void ResetMenuUI()
     {
-        elementsMain.SetActive(true);
         elementsSkins.SetActive(false);
         lateHolder.gameObject.SetActive(true);
         lateHolder.alpha = 0;
@@ -55,7 +60,7 @@ public class Menu : Singleton<Menu>
         bestRunText.text = "Best Run : " + GameManager.Instance.Player.MaxMoves;
     }
 
-    void ResetElements()
+    void ResetWorld()
     {
         Runner.Instance.Reset(); // need to be done before camera
         CameraFollow.Instance.SetForMenu();
@@ -71,12 +76,52 @@ public class Menu : Singleton<Menu>
 
         _menuSeq?.Kill();
         _menuSeq = DOTween.Sequence()
-            .Insert(init ? 1 : 3, titleText.DOFade(1, 3))
-            .Insert(1, lateHolder.DOFade(1, 1f))
-            .InsertCallback(init ? 0 : 2, ResetElements)
-            .InsertCallback((init ? 0 : 3) + Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
+            .Insert(1, lateHolder.DOFade(1, 1f));
 
-        switchButtons(_menuSeq, init ? 1 : 3, true, false);
+        if (init)
+        {
+            elementsMain.SetActive(true);
+            elementsAfterDie.SetActive(false);
+            switchButtons(_menuSeq, 1, true, false);
+            ResetWorld();
+            _menuSeq
+                .Insert(1, titleText.DOFade(1, 3))
+                .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
+        }
+        else// after endGame
+        {
+            lastTimeText.text = "Time: " + GameManager.Instance.Player.RunningTime + " sec.";
+            lastMovesText.text = "Moves: " + GameManager.Instance.Player.LastMoves;
+            StopCoroutine(SaturateImage(1));
+            StartCoroutine(SaturateImage(0));
+            elementsMain.SetActive(false);
+            elementsAfterDie.SetActive(true);
+        }
+    }
+
+    IEnumerator SaturateImage(float endValue)
+    {
+        yield return null;
+        var init = cameraColorSuite.saturation;
+        for (int i = 1; i < 20; i++)
+        {
+            cameraColorSuite.saturation = Mathf.Lerp(init, endValue, i / 20f);
+            yield return null;
+        }
+    }
+
+    public void OnEndMachConfirmClick()
+    {
+        StopCoroutine(SaturateImage(1));
+        StartCoroutine(SaturateImage(1));
+        elementsMain.SetActive(true);
+        elementsAfterDie.SetActive(false);
+        switchButtons(_menuSeq, 1, true, false);
+        ResetWorld();
+        _2ndMenuSeq?.Kill();
+        _2ndMenuSeq = DOTween.Sequence()
+            .Insert(0, titleText.DOFade(1, 3))
+            .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
     }
 
     public void ShowGameMenu()
@@ -89,7 +134,7 @@ public class Menu : Singleton<Menu>
     public void OnPlayClick()
     {
         _menuSeq?.Kill();
-        ResetElements();
+        ResetWorld();
         GameManager.Instance.StartAnotherGame();
     }
 

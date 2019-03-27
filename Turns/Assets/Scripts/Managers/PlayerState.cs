@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerState
 {
    public int MaxMoves;
+   public int LastMoves;
    public int Gems;
    public float RunningTime;
    public int TilesPassed;
@@ -18,6 +19,7 @@ public class PlayerState
    {
       RunningTime = time;
       TilesPassed = tilesPassed;
+      LastMoves = movesMade;
       if (MaxMoves < movesMade)
       {
          MaxMoves = movesMade;

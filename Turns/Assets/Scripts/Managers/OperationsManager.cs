@@ -38,7 +38,7 @@ public class OperationsManager : Singleton<OperationsManager>
 
     PlayerAction GetPendingAction()
     {
-        var playerTile = Runner.Instance.CurrentTilePosition;
+        var playerTile = Runner.Instance.LastTilePosition;
         var playerDirection = Runner.Instance.Direction;
 
         var pendingAction = PlayerAction.None;

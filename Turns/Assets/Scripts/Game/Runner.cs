@@ -15,10 +15,12 @@ public class Runner : Singleton<Runner>
     public bool IsRunning { get; private set; }
     public bool IsJumping { get; private set; }
     public Vector3Int Direction { get; private set; }
+    [FormerlySerializedAs("CurrentTilePosition")] public Vector3Int? LastTilePosition = Vector3Int.zero;
+    public float Speed => (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime);
+
     Rigidbody _rb;
     Transform _tr;
-    public Vector3Int? CurrentTilePosition = Vector3Int.zero;
-
+    
     Vector3Int checkedTilePosition = Vector3Int.up;
     FloorTile lastSteppedTile = null;
     float _startDieTime;
@@ -42,7 +44,7 @@ public class Runner : Singleton<Runner>
         // is falling to it's death for too long
         if (!Game.Instance.IsStarted && IsFalling && Time.unscaledTime - _startDieTime > 6)
         {
-            Reset();
+            return;
         }
 
         if (!FallingInTheBeginning)
@@ -69,7 +71,7 @@ public class Runner : Singleton<Runner>
         //PlayerController.Instance.Reset();
 
         _rb.isKinematic = true;
-        CurrentTilePosition = Vector3Int.zero;
+        LastTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
         _rb.rotation = Quaternion.identity;
         _tr.rotation = Quaternion.identity;
@@ -92,7 +94,7 @@ public class Runner : Singleton<Runner>
 
         _seq = DOTween.Sequence()
             .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
-            .InsertCallback(0.5f, ShowParticles_Land)
+            .InsertCallback(0.47f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
                 IsRunning = true;
@@ -130,7 +132,7 @@ public class Runner : Singleton<Runner>
     
     public void Jump()
     {
-        lifted = false;
+        _lifted = false;
         IsJumping = true;
 
         _rb.AddForce(-Game.Instance.DefaultGravity * 8);
@@ -139,63 +141,61 @@ public class Runner : Singleton<Runner>
     
     
     float m_GroundCheckDistance = 0.1f;
-    bool lifted = false;
-    bool CheckGroundStatus(bool afterStartJump)
+    bool _lifted = false;
+    bool HasLanded()
     {
         RaycastHit hitInfo;
 #if UNITY_EDITOR
         // helper to visualise the ground check ray in the scene view
         Debug.DrawLine(transform.position , transform.position + (Vector3.down * m_GroundCheckDistance));
 #endif
-        // 0.1f is a small offset to start the ray from inside the character
-        // it is also good to note that the transform position in the sample assets is at the base of the character
         if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, m_GroundCheckDistance))
         {
-            if (afterStartJump && !lifted)
+            if (!_lifted)
             {
                 return false;
             }
-        }
-        else
-        {
-            lifted = true;
-            return false;
+
+            _lifted = false;
+            return true;
         }
 
-        return true;
+        _lifted = true;
+        return false;
     }
 
     public void JumpFinished()
     {
         IsJumping = false;
-        ShowParticles_LightLand();
     }
 
-    public void SlowDownAndDie()
+    public void SlowDownAndDie(Vector3Int? awayDirection)
     {
         IsRunning = false;
         _startDieTime = Time.unscaledTime;
 
         _rb.constraints = RigidbodyConstraints.None;
-        IsFalling = true;
-    }
+        if (awayDirection != null)
+        {
+            _rb.AddForce(awayDirection.Value * 3);
+        }
 
-    public float Speed
-    {
-        get { return (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime); }
+        IsFalling = true;
     }
 
     void CheckTilePosition()
     {
-        if (IsJumping)
+        if (HasLanded())
         {
-            if (CheckGroundStatus(true))
+            if (IsJumping)
             {
                 JumpFinished();
             }
+            
+            ShowParticles_LightLand();
         }
-        
-        
+
+
         var pos = _tr.localPosition;
         
         var tilePosition = new Vector3Int(Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y), Mathf.RoundToInt(pos.z));
@@ -209,16 +209,14 @@ public class Runner : Singleton<Runner>
 
         Game.Instance._debug.text = Game.Instance.IsStarted ? tilePosition.ToString() : Game.Instance._debug.text +"end";
         
-        if (CurrentTilePosition != null && tilePosition != CurrentTilePosition)
+        if (LastTilePosition != null && tilePosition != LastTilePosition)
         {
             FloorManager.Instance.OnPlayerPassedTile();
-           
         }
 
-        CurrentTilePosition = tilePosition;
 
-        var tile = FloorManager.Instance.PeekTile(CurrentTilePosition.Value);
-        if (tile != null)
+        var tile = FloorManager.Instance.PeekTile(tilePosition);
+        if ((object)tile != null)
         {
             lastSteppedTile = tile;
             
@@ -227,13 +225,39 @@ public class Runner : Singleton<Runner>
                 Game.Instance.PlayerDie();
             }
         }
+        else if (!IsJumping && LastTilePosition != null)
+        {
+            var p = tilePosition + Vector3Int.right;
+            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+            {
+                Game.Instance.PlayerDie(tilePosition - p);
+            }
+            p = tilePosition + Vector3Int.left;
+            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+            {
+                Game.Instance.PlayerDie(tilePosition - p);
+            }
+            p = tilePosition + VectorInt.forward;
+            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+            {
+                Game.Instance.PlayerDie(tilePosition - p);
+            }
+            p = tilePosition + VectorInt.back;
+            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+            {
+                Game.Instance.PlayerDie(tilePosition - p);
+            }
+        }
 
-        if (Game.Instance.IsStarted && lastSteppedTile != null)
+
+        if (Game.Instance.IsStarted && (object)lastSteppedTile != null)
         {
             if (tilePosition.y - lastSteppedTile.PositionKey.y < -1)
             {
                 Game.Instance.PlayerDie();
             }
         }
+        
+        LastTilePosition = tilePosition;
     }
 }
