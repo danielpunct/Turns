@@ -65,6 +65,7 @@ public class Menu : Singleton<Menu>
         Runner.Instance.Reset(); // need to be done before camera
         CameraFollow.Instance.SetForMenu();
         FloorManager.Instance.Reset();
+        MomentsRecorderHelper.Instance.StopReplay();
     }
 
     public void ShowMenu(bool init)
@@ -96,6 +97,11 @@ public class Menu : Singleton<Menu>
             StartCoroutine(SaturateImage(0));
             elementsMain.SetActive(false);
             elementsAfterDie.SetActive(true);
+
+            _menuSeq
+                .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.CaptureReplay())
+                .InsertCallback(1f, () => MomentsRecorderHelper.Instance.StartPlayback());
+
         }
     }
 
@@ -128,6 +134,7 @@ public class Menu : Singleton<Menu>
     {
         menuUIHolder.SetActive(false);
         gameUIHolder.SetActive(true);
+        MomentsRecorderHelper.Instance.ResetRecording();
         lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
     }
 

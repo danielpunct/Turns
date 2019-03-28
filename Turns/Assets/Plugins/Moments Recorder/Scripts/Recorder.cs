@@ -58,7 +58,7 @@ namespace Moments
 		bool m_AutoAspect = true;
 
 		[SerializeField, Range(1, 30)]
-		int m_FramePerSecond = 15;
+		public int m_FramePerSecond = 15;
 
 		[SerializeField, Min(-1)]
 		int m_Repeat = 0;
@@ -138,6 +138,10 @@ namespace Moments
 		#endregion
 
 		#region Public API
+		
+		public Queue<RenderTexture> Frames => m_Frames;
+		public int Width => m_Width;
+		public int Height => m_Height;
 
 		/// <summary>
 		/// Initializes the component. Use this if you need to change the recorder settings in a script.
