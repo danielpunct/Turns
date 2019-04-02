@@ -19,12 +19,14 @@ public class Game : Singleton<Game>
     public int PlayerPassTilesBuffer = 1; // initial player wait
     public int StateChangeChances = 7;
     [Range(0,100)]
-    public int HoleChangePondere = 50;
+    public int HolePondere = 50;
     [Range(0,100)]
     public int StairePondere = 50;
+    [Range(0,100)]
+    public int DirChangePondere = 50;
 
     public int MaxStage = 10;
-    public int MovesInStage = 4;
+    public int TilesInStage = 4;
     public int DirChageMinDistance = 1;
     public int HoleLength = 2;
     public int HolesMinDistance = 2;
@@ -89,7 +91,7 @@ public class Game : Singleton<Game>
 
             OperationsManager.Instance.DoNextAction();
             MovesMade++;
-            Stage = MovesMade / MovesInStage;
+            Stage = FloorManager.Instance.TilesPassed / TilesInStage;
             Menu.Instance.UpdateUI();
             Physics.gravity = DefaultGravity * 1 / TilePassTime;
         }

@@ -91,7 +91,7 @@ public class Menu : Singleton<Menu>
         }
         else// after endGame
         {
-            lastTimeText.text = "Time: " + GameManager.Instance.Player.RunningTime + " sec.";
+            lastTimeText.text = "Time: " + (int) GameManager.Instance.Player.RunningTime + " sec.";
             lastMovesText.text = "Moves: " + GameManager.Instance.Player.LastMoves;
             StopCoroutine(SaturateImage(1));
             StartCoroutine(SaturateImage(0));

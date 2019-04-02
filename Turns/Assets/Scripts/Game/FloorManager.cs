@@ -71,6 +71,8 @@ public class FloorManager : Singleton<FloorManager>
 
         AppearNewTile();
         PrepareNextTileState(false);
+        
+        Menu.Instance.UpdateUI();
     }
 
    
@@ -191,6 +193,8 @@ public class FloorManager : Singleton<FloorManager>
 
         return OperationsManager.PlayerAction.None;
     }
+
+    bool changeQueued;
     
     public void PrepareNextTileState(bool init)
     {
@@ -212,23 +216,35 @@ public class FloorManager : Singleton<FloorManager>
             _nextDirChangeBuffer--;
             _nextHoleBuffer--;
             _nextStairsBuffer--;
+
             
-            if (Random.Range(0, Game.Instance.StateChangeChances) == 0) // if change state
+            
+            if (changeQueued 
+                || Random.Range(0, Game.Instance.StateChangeChances) == 0
+                || _nextDirChangeBuffer < -4) // if change state
             {
-                if (holeAllowed && Utils.GetRand100Pondere(Game.Instance.HoleChangePondere)) // if do hole
+                changeQueued = true;
+                var pondere = Random.Range(0,
+                    Game.Instance.HolePondere + Game.Instance.StairePondere + Game.Instance.DirChangePondere);
+
+
+                if (holeAllowed && pondere < Game.Instance.HolePondere) // if do hole
                 {
                     _nextHoleBuffer = Game.Instance.HoleLength;
+                    changeQueued = false;
                 }
-                else if (stairsAllowed && Utils.GetRand100Pondere(Game.Instance.StairePondere)) // if do stairs
+                else if (stairsAllowed &&  pondere < Game.Instance.HolePondere + Game.Instance.StairePondere) // if do stairs
                 {
-                    _nextStairDirectionUp = false;// Random.Range(0, 2) == 1;
+                    _nextStairDirectionUp = false; // Random.Range(0, 2) == 1;
                     _nextStairsBuffer = Game.Instance.StairsLength;
-                    
+                    changeQueued = false;
+
                 }
-                else if(changeDirAllowed) // change dir
+                else if (changeDirAllowed) // change dir
                 {
                     _currentDirection = GetChangedRandomDirection(_currentDirection, _tiles.Last.Value.PositionKey);
                     _nextDirChangeBuffer = Game.Instance.DirChageMinDistance;
+                    changeQueued = false;
                 }
             }
 

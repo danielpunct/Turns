@@ -10,13 +10,15 @@ public class Progress : MonoBehaviour
     public Slider progressSlider;   
     public TMP_Text movesText;
 
+    Tween t;
 
     public void Display()
     {
-        currentLevel.text = Game.Instance.Stage.ToString();
-        nextLevel.text = (Game.Instance.Stage + 1).ToString();
-        var newValue = (Game.Instance.MovesMade % Game.Instance.MovesInStage) / (float) Game.Instance.MovesInStage;
-        progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);
+        currentLevel.text = (Game.Instance.Stage + 1).ToString();
+        nextLevel.text = (Game.Instance.Stage + 2).ToString();
+        var newValue = (FloorManager.Instance.TilesPassed % Game.Instance.TilesInStage) / (float) Game.Instance.TilesInStage;
+        t?.Kill();
+        t = progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);
         movesText.text = Game.Instance.MovesMade.ToString();
 
     }

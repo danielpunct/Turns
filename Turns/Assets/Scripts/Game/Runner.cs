@@ -123,6 +123,8 @@ public class Runner : Singleton<Runner>
     {
         Direction = newDirection;
 
+        Debug.Log(transform.localPosition);
+        
         var eulerRotation = Quaternion.LookRotation(Direction, Vector3.up).eulerAngles;
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
