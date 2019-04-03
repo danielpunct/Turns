@@ -32,14 +32,19 @@ public class Game : Singleton<Game>
     public int HolesMinDistance = 2;
     public int StairsLength = 2;
     public int StairsMinDistance = 2;
+    public float PerfectChangeThreshold = 0.1f;
     public int MovesMade { get; private set; }
+    public int PerfectPoints { get; private set; }
     [ReadOnly]
     public Vector3 DefaultGravity;
 
-    float _startTime;
     public int Stage { get; private set; }
-    public int lastInteractionMove = 0;
+    public int LastInteractionMove = 0;
 
+    float _startTime;
+    int perfectChangeMove = -1;
+    int perfectChangeBuffer = 1;
+    
     void Awake()
     {
         DefaultGravity = Physics.gravity;
@@ -51,8 +56,12 @@ public class Game : Singleton<Game>
     public void Reset()
     {
         MovesMade = 0;
-        lastInteractionMove = -10;
+        PerfectPoints = 0;
+        LastInteractionMove = -10;
+        perfectChangeMove = -1;
+        perfectChangeBuffer = 1;
         Stage = 0;
+        
     }
 
     public void Play()
@@ -74,12 +83,12 @@ public class Game : Singleton<Game>
 
     public void UserTap()
     {
-        if (FloorManager.Instance.TilesPassed - lastInteractionMove < 2)
+        if (FloorManager.Instance.TilesPassed - LastInteractionMove < 2)
         {
             return;
         }
 
-        lastInteractionMove = FloorManager.Instance.TilesPassed;
+        LastInteractionMove = FloorManager.Instance.TilesPassed;
         
         if (Runner.Instance.IsRunning && !Runner.Instance.IsJumping )
         {
@@ -97,9 +106,32 @@ public class Game : Singleton<Game>
         }
     }
 
+
+    public void OnPlayerPerfectChange()
+    {
+        if (perfectChangeMove == MovesMade - 1)
+        {
+            perfectChangeBuffer *= 2;
+        }
+        else
+        {
+            perfectChangeBuffer = 1;
+        }
+
+        perfectChangeMove = MovesMade;
+
+//        Menu.Instance.comboUI.Show(perfectChangeBuffer + "x");
+        Menu.Instance.comboUI.Show("+"+perfectChangeBuffer);
+        PerfectPoints += perfectChangeBuffer;
+    }
+
     public void PlayerDie(Vector3Int? awayDirection = null)
     {
-        GameManager.Instance.Player.SaveRun(MovesMade, Time.fixedTime - _startTime, FloorManager.Instance.TilesPassed);
+        GameManager.Instance.Player.SaveRun(
+            MovesMade, 
+            Time.fixedTime - _startTime, 
+            FloorManager.Instance.TilesPassed,
+            PerfectPoints);
         Runner.Instance.SlowDownAndDie(awayDirection);
         GameManager.Instance.GameOver();
         IsStarted = false;

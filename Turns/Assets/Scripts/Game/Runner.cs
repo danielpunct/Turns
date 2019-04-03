@@ -123,12 +123,25 @@ public class Runner : Singleton<Runner>
     {
         Direction = newDirection;
 
-        Debug.Log(transform.localPosition);
+        if (WasPerfectChange(transform.localPosition, Direction))
+        {
+            Game.Instance.OnPlayerPerfectChange();
+        }
         
         var eulerRotation = Quaternion.LookRotation(Direction, Vector3.up).eulerAngles;
         _rb.velocity = Vector3.zero;
         _rb.angularVelocity = Vector3.zero;
         _rb.DORotate(eulerRotation, 0.4f).SetEase(Ease.OutBack);
+    }
+
+    bool WasPerfectChange(Vector3 position, Vector3Int direction)
+    {
+        if (direction == Vector3Int.left || direction == Vector3Int.right)
+        {
+            return  Mathf.Abs( position.z - Mathf.RoundToInt(position.z) )< Game.Instance.PerfectChangeThreshold;
+        }
+        
+        return Mathf.Abs( position.x - Mathf.RoundToInt(position.x) )<  Game.Instance.PerfectChangeThreshold;
     }
 
     

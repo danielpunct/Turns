@@ -28,7 +28,8 @@ public class Menu : Singleton<Menu>
     public TMP_Text lastTimeText;
 
     [Header("Game")] public GameObject gameUIHolder;
-    public Progress progress;
+    public Progress progressUI;
+    public ComboUI comboUI;
 
     Sequence _menuSeq;
     Sequence _skinsSeq;
@@ -57,7 +58,7 @@ public class Menu : Singleton<Menu>
         titleText.DOFade(0, 0);
         
         skinButtonsHolder.SetActive(false);
-        bestRunText.text = "Best Run : " + GameManager.Instance.Player.MaxMoves;
+        bestRunText.text = "Highscore : " + GameManager.Instance.Player.MaxPoints;
     }
 
     void ResetWorld()
@@ -92,7 +93,7 @@ public class Menu : Singleton<Menu>
         else// after endGame
         {
             lastTimeText.text = "Time: " + (int) GameManager.Instance.Player.RunningTime + " sec.";
-            lastMovesText.text = "Moves: " + GameManager.Instance.Player.LastMoves;
+            lastMovesText.text = "Points: " + GameManager.Instance.Player.LastPoints;
             StopCoroutine(SaturateImage(1));
             StartCoroutine(SaturateImage(0));
             elementsMain.SetActive(false);
@@ -136,6 +137,8 @@ public class Menu : Singleton<Menu>
         gameUIHolder.SetActive(true);
         MomentsRecorderHelper.Instance.ResetRecording();
         lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
+        
+        comboUI.Hide();
     }
 
     public void OnPlayClick()
@@ -150,7 +153,7 @@ public class Menu : Singleton<Menu>
     {
         if (Game.Instance.IsStarted)
         {
-            progress.Display();
+            progressUI.Display();
         }
     }
 
