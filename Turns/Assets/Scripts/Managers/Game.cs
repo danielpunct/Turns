@@ -111,7 +111,7 @@ public class Game : Singleton<Game>
     {
         if (perfectChangeMove == MovesMade - 1)
         {
-            perfectChangeBuffer *= 2;
+            perfectChangeBuffer += 2;
         }
         else
         {

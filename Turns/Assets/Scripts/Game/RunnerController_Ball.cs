@@ -3,9 +3,10 @@ using UnityEngine;
 
 public class RunnerController_Ball : MonoBehaviour
 {
-    public GameObject[] ballPrefabs;
-    
-    public Transform model;
+    public RotatorModel[] ballPrefabs;
+
+    public Transform modelsHolder;
+    RotatorModel _current;
 
     void Update()
     {
@@ -14,7 +15,7 @@ public class RunnerController_Ball : MonoBehaviour
             var dir = Runner.Instance.Direction.ToVector3();
             var right = new Vector3(dir.z, dir.y, -dir.x);
             var rotationSpeed = Runner.Instance.Speed * 100;
-            model.Rotate(right * rotationSpeed, Space.World);
+            _current.Holder.Rotate(right * rotationSpeed, Space.World);
         }
     }
 
@@ -25,7 +26,8 @@ public class RunnerController_Ball : MonoBehaviour
 
     public void LoadModel(int index)
     {
-        model.DestroyChildren();
-        Instantiate(ballPrefabs[index], model);
+        
+        modelsHolder.DestroyChildren();
+        _current = Instantiate(ballPrefabs[index], modelsHolder);
     }
 }
