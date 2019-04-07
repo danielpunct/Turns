@@ -19,7 +19,7 @@ public class RunnerController_Ball : MonoBehaviour
         }
     }
 
-    void Start()
+    void Awake()
     {
         LoadModel(0);
     }
@@ -29,5 +29,6 @@ public class RunnerController_Ball : MonoBehaviour
         
         modelsHolder.DestroyChildren();
         _current = Instantiate(ballPrefabs[index], modelsHolder);
+        Runner.Instance.SetModel(_current);
     }
 }

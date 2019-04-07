@@ -277,6 +277,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Holder: {fileID: 8243673969659851449}
+  idleEffectsHolder: {fileID: 5498512481941078970}
+  activeEffectsHolder: {fileID: 850779963790750393}
 --- !u!1 &5498512481941078970
 GameObject:
   m_ObjectHideFlags: 0

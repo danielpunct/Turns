@@ -69,10 +69,15 @@ public class Runner : Singleton<Runner>
         }
     }
 
+    public void SetModel(RunnerModel model)
+    {
+        _currentModel = model;
+    }
 
     public void Reset()
     {
         State = RunnerState.Cinematic;
+        _currentModel.Reset();
 
         //If human player
         //PlayerController.Instance.Reset();
@@ -90,7 +95,8 @@ public class Runner : Singleton<Runner>
 
         _seq?.Kill();
         _seq = DOTween.Sequence()
-            .Insert(playerPresentOffset, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack));
+            .Insert(playerPresentOffset, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
+            .InsertCallback(0.6f, _currentModel.SetForMenu);
     }
 
 
@@ -101,7 +107,11 @@ public class Runner : Singleton<Runner>
         _seq = DOTween.Sequence()
             .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
             .InsertCallback(0.47f, ShowParticles_Land)
-            .InsertCallback(1f, () => { State = RunnerState.Running; });
+            .InsertCallback(1f, () =>
+            {
+                State = RunnerState.Running;
+                _currentModel.SetForRun();
+            });
 
         _tr.localScale = Vector3.zero;
         State = RunnerState.Cinematic;
