@@ -46,6 +46,8 @@ public class Runner : Singleton<Runner>
         _rb = GetComponent<Rigidbody>();
         _tr = transform;
     }
+    
+    Vector3 _dieingForce = Vector3.zero;
 
     void FixedUpdate()
     {
@@ -55,18 +57,33 @@ public class Runner : Singleton<Runner>
         }
 
         // is falling to it's death for too long
-        if (State == RunnerState.Falling && Time.unscaledTime - _startDieTime > 6)
+        if (State == RunnerState.Falling)
         {
-            return;
+            if (Time.unscaledTime - _startDieTime > 6)
+            {
+                return;
+            }
+
+            if (Time.unscaledTime - _startDieTime > 0)
+            {
+                //_rb.AddForce(_dieingForce);
+                _rb.MovePosition(_tr.localPosition +
+                                 _dieingForce * Speed);
+            }
         }
 
-        if (State != RunnerState.Cinematic)
+        if (State == RunnerState.Running || State == RunnerState.Jumping)
         {
             _rb.MovePosition(_tr.localPosition +
                              new Vector3(Direction.x * Speed, Direction.y * Speed, Direction.z * Speed));
 
+        }
+
+        if (State != RunnerState.Cinematic)
+        {
             CheckTilePosition();
         }
+
     }
 
     public void SetModel(RunnerModel model)
@@ -81,7 +98,7 @@ public class Runner : Singleton<Runner>
 
         //If human player
         //PlayerController.Instance.Reset();
-
+        _dieingForce = Vector3.zero;
         _rb.isKinematic = true;
         LastTilePosition = Vector3Int.zero;
         _rb.velocity = Vector3.zero;
@@ -96,7 +113,7 @@ public class Runner : Singleton<Runner>
         _seq?.Kill();
         _seq = DOTween.Sequence()
             .Insert(playerPresentOffset, _tr.DOScale(1, 0.6f).SetEase(Ease.OutBack))
-            .InsertCallback(0.6f, _currentModel.SetForMenu);
+            .InsertCallback(1.5f, _currentModel.SetForMenu);
     }
 
 
@@ -106,7 +123,7 @@ public class Runner : Singleton<Runner>
 
         _seq = DOTween.Sequence()
             .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
-            .InsertCallback(0.47f, ShowParticles_Land)
+            .InsertCallback(0.40f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
                 State = RunnerState.Running;
@@ -197,15 +214,15 @@ public class Runner : Singleton<Runner>
         State = RunnerState.Running;
     }
 
-    public void SlowDownAndDie() //Vector3Int? awayDirection)
+    public void SlowDownAndDie(Vector3Int? awayDirection)
     {
         _startDieTime = Time.unscaledTime;
 
         _rb.constraints = RigidbodyConstraints.None;
-//        if (awayDirection != null)
-//        {
-//            _rb.AddForce(awayDirection.Value * 3);
-//        }
+        if (awayDirection != null)
+        {
+            _dieingForce = awayDirection.Value;
+        }
 
         State = RunnerState.Falling;
     }
@@ -239,9 +256,6 @@ public class Runner : Singleton<Runner>
 
         _checkedTilePosition = tilePosition;
 
-        Game.Instance._debug.text =
-            Game.Instance.IsStarted ? tilePosition.ToString() : Game.Instance._debug.text + "end";
-
         if (LastTilePosition != null && tilePosition != LastTilePosition)
         {
             FloorManager.Instance.OnPlayerPassedTile();
@@ -254,8 +268,46 @@ public class Runner : Singleton<Runner>
 
             if (tile.IsHole && State != RunnerState.Jumping)
             {
-                SlowDownAndDie();
+                SlowDownAndDie(null);
             }
+        }
+        else if (State == RunnerState.Running &&
+                 LastTilePosition != null &&
+                 (object) _lastSteppedTile != null &&
+                 _lastSteppedTile.NextPositionKey != null)
+        {
+            var roadDir = _lastSteppedTile.NextPositionKey.Value.HorizontalDif(_lastSteppedTile.PositionKey);
+           if ( roadDir != Direction)
+
+           {
+//               _tr.localScale = Vector3.one * 0.5f;
+                SlowDownAndDie(tilePosition - _lastSteppedTile.NextPositionKey);
+            }
+
+//            var p = tilePosition + Vector3Int.right;
+//            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+//            {
+//                SlowDownAndDie();
+////                Game.Instance.PlayerDie(tilePosition - p);
+//            }
+//            p = tilePosition + Vector3Int.left;
+//            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+//            {
+//                SlowDownAndDie();
+////                Game.Instance.PlayerDie(tilePosition - p);
+//            }
+//            p = tilePosition + VectorInt.forward;
+//            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+//            {
+//                SlowDownAndDie();
+////                Game.Instance.PlayerDie(tilePosition - p);
+//            }
+//            p = tilePosition + VectorInt.back;
+//            if ((object) FloorManager.Instance.PeekTile(p) != null && p != LastTilePosition)
+//            {
+//                SlowDownAndDie();
+////                Game.Instance.PlayerDie(tilePosition - p);
+//            }
         }
 
 

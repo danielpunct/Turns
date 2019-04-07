@@ -836,7 +836,7 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.61
+    m_Bias: 0.286
     m_NormalBias: 0
     m_NearPlane: 0.1
   m_Cookie: {fileID: 0}
@@ -1300,7 +1300,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 125794, guid: c946f418d37dfe74f9c2fa6532b5ac57, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 482838, guid: c946f418d37dfe74f9c2fa6532b5ac57, type: 3}
       propertyPath: m_LocalPosition.x
@@ -26310,8 +26310,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2015505843}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.008, z: 0}
-  m_LocalScale: {x: 0.86172, y: 0.86172, z: 0.86172}
+  m_LocalPosition: {x: 0.0000078888, y: 0.056, z: -0.000000015889}
+  m_LocalScale: {x: 0.63201135, y: 0.63201135, z: 0.63201135}
   m_Children:
   - {fileID: 994877329}
   m_Father: {fileID: 2088582736}
@@ -26683,7 +26683,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2088582735}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.19, z: 0}
+  m_LocalPosition: {x: 0, y: 0.018, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2015505844}
@@ -26752,7 +26752,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.38
+  m_Radius: 0.29
   m_Center: {x: 0, y: 0.27, z: 0}
 --- !u!1001 &2089048220
 PrefabInstance:

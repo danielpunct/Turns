@@ -88,11 +88,12 @@ public class Game : Singleton<Game>
             return;
         }
 
-        LastInteractionMove = FloorManager.Instance.TilesPassed;
         
         if (Runner.Instance.State == Runner.RunnerState.Running )
         {
             OperationsManager.Instance.DoNextAction();
+            LastInteractionMove = FloorManager.Instance.TilesPassed;
+
             MovesMade++;
             Stage = FloorManager.Instance.TilesPassed / TilesInStage;
             Menu.Instance.UpdateUI();

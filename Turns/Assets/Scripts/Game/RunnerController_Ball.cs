@@ -14,7 +14,7 @@ public class RunnerController_Ball : MonoBehaviour
         {
             var dir = Runner.Instance.Direction.ToVector3();
             var right = new Vector3(dir.z, dir.y, -dir.x);
-            var rotationSpeed = Runner.Instance.Speed * 100;
+            var rotationSpeed = Runner.Instance.Speed * 150;
             _current.Holder.Rotate(right * rotationSpeed, Space.World);
         }
     }

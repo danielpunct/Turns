@@ -161,6 +161,11 @@ public class FloorManager : Singleton<FloorManager>
     {
         var tile = _tiles.Find(_tilesDict[fromPositionKey]);
 
+        if (tile != null && tile.Value.IsHole)
+        {
+            return OperationsManager.PlayerAction.Invalid;
+        }
+        
         while (tile != null)
         {
             // if it is the last tile generated
