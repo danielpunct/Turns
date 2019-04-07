@@ -1,6 +1,6 @@
     using UnityEngine;
 
-    public class RotatorModel: MonoBehaviour
+    public class RunnerModel: MonoBehaviour
     {
         public Transform Holder;
     }

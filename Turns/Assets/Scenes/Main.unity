@@ -26737,7 +26737,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   __messageText: 
   playerPresentOffset: 1
-  apearParticleSystem: {fileID: 812528897456182406}
+  landParticleSystem: {fileID: 812528897456182406}
   lightLandParticleSystem: {fileID: 327171773}
   graphicHolder: {fileID: 2015505844}
   particlesPivot: {fileID: 1596486716}

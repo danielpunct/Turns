@@ -20,7 +20,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         if (Game.Instance.IsStarted)
         {
-            transform.position = Vector3.Lerp(transform.position, player.position, Runner.Instance.IsRunning ? Time.fixedDeltaTime * followMultiplier : 1);
+            transform.position = Vector3.Lerp(transform.position, player.position, Runner.Instance.State != Runner.RunnerState.Cinematic ? Time.fixedDeltaTime * followMultiplier : 1);
         }
     }
 

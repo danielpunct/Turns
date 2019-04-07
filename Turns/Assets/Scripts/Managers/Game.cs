@@ -90,14 +90,8 @@ public class Game : Singleton<Game>
 
         LastInteractionMove = FloorManager.Instance.TilesPassed;
         
-        if (Runner.Instance.IsRunning && !Runner.Instance.IsJumping )
+        if (Runner.Instance.State == Runner.RunnerState.Running )
         {
-            var tile = FloorManager.Instance.PeekTile(Runner.Instance.LastTilePosition.Value);
-            if (tile == null || tile.IsHole)
-            {
-                Debug.Log(tile == null ? "nul ": " hole");
-            }
-
             OperationsManager.Instance.DoNextAction();
             MovesMade++;
             Stage = FloorManager.Instance.TilesPassed / TilesInStage;
@@ -125,14 +119,14 @@ public class Game : Singleton<Game>
         PerfectPoints += perfectChangeBuffer;
     }
 
-    public void PlayerDie(Vector3Int? awayDirection = null)
+    public void RunOver(Vector3Int? awayDirection = null)
     {
         GameManager.Instance.Player.SaveRun(
             MovesMade, 
             Time.fixedTime - _startTime, 
             FloorManager.Instance.TilesPassed,
             PerfectPoints);
-        Runner.Instance.SlowDownAndDie(awayDirection);
+
         GameManager.Instance.GameOver();
         IsStarted = false;
     }

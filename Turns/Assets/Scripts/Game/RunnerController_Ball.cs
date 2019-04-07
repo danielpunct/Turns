@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class RunnerController_Ball : MonoBehaviour
 {
-    public RotatorModel[] ballPrefabs;
+    public RunnerModel[] ballPrefabs;
 
     public Transform modelsHolder;
-    RotatorModel _current;
+    RunnerModel _current;
 
     void Update()
     {
-        if (Runner.Instance.IsRunning)
+        if (Runner.Instance.State == Runner.RunnerState.Running)
         {
             var dir = Runner.Instance.Direction.ToVector3();
             var right = new Vector3(dir.z, dir.y, -dir.x);

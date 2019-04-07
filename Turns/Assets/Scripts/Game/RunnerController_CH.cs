@@ -23,32 +23,32 @@ public class RunnerController_CH : Singleton<RunnerController_CH>
       m_OrigGroundCheckDistance = m_GroundCheckDistance;
    }
 
-   void Update()
-   {
-      if (Runner.Instance.IsFalling)
-      {
-         m_IsGrounded = false;
-      }
-
-      if (Runner.Instance.IsRunning)
-      {
-         m_ForwardAmount = Runner.Instance.Speed * 10;
-         m_GroundCheckDistance = 0.1f;
-         
-         
-//         m_TurnAmount = Mathf.Atan2(Player.Instance.Direction.x, Player.Instance.Direction.z);
-      }
-
-      if (!m_IsGrounded)
-      {
-         HandleAirborneMovement();
-      }
-
-      if (Runner.Instance.IsRunning || Runner.Instance.IsFalling)
-      {
-         UpdateAnimator();
-      }
-   }
+//   void Update()
+//   {
+//      if (Runner.Instance.IsFalling)
+//      {
+//         m_IsGrounded = false;
+//      }
+//
+//      if (Runner.Instance.IsRunning)
+//      {
+//         m_ForwardAmount = Runner.Instance.Speed * 10;
+//         m_GroundCheckDistance = 0.1f;
+//         
+//         
+////         m_TurnAmount = Mathf.Atan2(Player.Instance.Direction.x, Player.Instance.Direction.z);
+//      }
+//
+//      if (!m_IsGrounded)
+//      {
+//         HandleAirborneMovement();
+//      }
+//
+//      if (Runner.Instance.IsRunning || Runner.Instance.IsFalling)
+//      {
+//         UpdateAnimator();
+//      }
+//   }
 
    public void Reset()
    {

@@ -7,6 +7,7 @@ public class OperationsManager : Singleton<OperationsManager>
 {
     public enum PlayerAction
     {
+        Invalid,
         None,
         Left,
         Back,
@@ -21,6 +22,8 @@ public class OperationsManager : Singleton<OperationsManager>
         
         switch (pendingAction)
         {
+            case PlayerAction.Invalid:
+                break;
             case PlayerAction.None:
                 Runner.Instance.ChangeDirection( FloorManager.Instance.GetChangedRandomDirection(Runner.Instance.Direction));
                 break;
@@ -38,19 +41,17 @@ public class OperationsManager : Singleton<OperationsManager>
 
     PlayerAction GetPendingAction()
     {
-        var playerTile = Runner.Instance.LastTilePosition;
+        var pendingAction = PlayerAction.Invalid;
+
+        var playerTilePos = Runner.Instance.TilePosition;
         var playerDirection = Runner.Instance.Direction;
 
-        var pendingAction = PlayerAction.None;
-        
-        if (playerTile != null)
-        {
-            var tile = FloorManager.Instance.PeekTile(playerTile.Value);
 
-            if (tile != null && tile.NextPositionKey != null)
-            {
-                pendingAction = FloorManager.Instance.GetNextPendingOperation(playerTile.Value, playerDirection);
-            }
+        var tile = FloorManager.Instance.PeekTile(playerTilePos);
+
+        if (tile != null && tile.NextPositionKey != null)
+        {
+            pendingAction = FloorManager.Instance.GetNextPendingOperation(playerTilePos, playerDirection);
         }
 
         return pendingAction;
