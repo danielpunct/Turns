@@ -7,6 +7,7 @@ using UnityEngine;
 public class ComboUI : MonoBehaviour
 {
     public TMP_Text text;
+    public AnimationCurve textPopCurve;
 
     Transform tr;
     GameObject go;
@@ -18,6 +19,11 @@ public class ComboUI : MonoBehaviour
         go = text.gameObject;
     }
 
+    void Start()
+    {
+        Hide();
+    }
+
     public void Hide()
     {
         seq?.Kill();
@@ -27,16 +33,15 @@ public class ComboUI : MonoBehaviour
     public void Show(string value)
     {
         text.text = value;
-        text.alpha = 0;
-        tr.localPosition = new Vector3(-400, 0, 0);
+        tr.localPosition = Vector3.zero;
         tr.localScale = Vector3.zero;
+        text.alpha = 1;
         go.SetActive(true);
         
         seq?.Kill();
         seq = DOTween.Sequence()
-            .Insert(0, tr.DOLocalMoveX(100, 1.3f).SetEase(Ease.OutCirc))
-            .Insert(0, tr.DOScale(1, 0.3f))
-            .Insert(0.8f, tr.DOScale(0, 0.6f))
-            .Insert(0, text.DOFade(1, 0.6f).SetLoops(2, LoopType.Yoyo));
+            .Insert(0, tr.DOScale(1, 0.75f).SetEase(textPopCurve))
+            .Insert(0.5f, tr.DOLocalMoveY(0.6f, 0.6f))
+            .Insert(0.5f, text.DOFade(0, 0.6f).SetEase(Ease.InCubic));
     }
 }

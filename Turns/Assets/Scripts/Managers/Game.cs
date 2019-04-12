@@ -18,12 +18,9 @@ public class Game : Singleton<Game>
     public int InitialTiles = 6;
     public int PlayerPassTilesBuffer = 1; // initial player wait
     public int StateChangeChances = 7;
-    [Range(0,100)]
-    public int HolePondere = 50;
-    [Range(0,100)]
-    public int StairePondere = 50;
-    [Range(0,100)]
-    public int DirChangePondere = 50;
+    [Range(0, 100)] public int HolePondere = 50;
+    [Range(0, 100)] public int StairePondere = 50;
+    [Range(0, 100)] public int DirChangePondere = 50;
 
     public int MaxStage = 10;
     public int TilesInStage = 4;
@@ -35,8 +32,7 @@ public class Game : Singleton<Game>
     public float PerfectChangeThreshold = 0.1f;
     public int MovesMade { get; private set; }
     public int PerfectPoints { get; private set; }
-    [ReadOnly]
-    public Vector3 DefaultGravity;
+    [ReadOnly] public Vector3 DefaultGravity;
 
     public int Stage { get; private set; }
     public int LastInteractionMove = 0;
@@ -44,7 +40,7 @@ public class Game : Singleton<Game>
     float _startTime;
     int perfectChangeMove = -1;
     int perfectChangeBuffer = 1;
-    
+
     void Awake()
     {
         DefaultGravity = Physics.gravity;
@@ -61,7 +57,7 @@ public class Game : Singleton<Game>
         perfectChangeMove = -1;
         perfectChangeBuffer = 1;
         Stage = 0;
-        
+
     }
 
     public void Play()
@@ -88,8 +84,8 @@ public class Game : Singleton<Game>
             return;
         }
 
-        
-        if (Runner.Instance.State == Runner.RunnerState.Running )
+
+        if (Runner.Instance.State == Runner.RunnerState.Running)
         {
             OperationsManager.Instance.DoNextAction();
             LastInteractionMove = FloorManager.Instance.TilesPassed;
@@ -106,7 +102,7 @@ public class Game : Singleton<Game>
     {
         if (perfectChangeMove == MovesMade - 1)
         {
-            perfectChangeBuffer += 2;
+            perfectChangeBuffer += perfectChangeBuffer == 1 ? 1 : 2;
         }
         else
         {
@@ -116,15 +112,15 @@ public class Game : Singleton<Game>
         perfectChangeMove = MovesMade;
 
 //        Menu.Instance.comboUI.Show(perfectChangeBuffer + "x");
-        Menu.Instance.comboUI.Show("+"+perfectChangeBuffer);
+        Menu.Instance.comboUI.Show($"+{perfectChangeBuffer}");
         PerfectPoints += perfectChangeBuffer;
     }
 
     public void RunOver(Vector3Int? awayDirection = null)
     {
         GameManager.Instance.Player.SaveRun(
-            MovesMade, 
-            Time.fixedTime - _startTime, 
+            MovesMade,
+            Time.fixedTime - _startTime,
             FloorManager.Instance.TilesPassed,
             PerfectPoints);
 
