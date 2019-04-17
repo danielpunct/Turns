@@ -34,7 +34,7 @@ public class Game : Singleton<Game>
     public int PerfectPoints { get; private set; }
     [ReadOnly] public Vector3 DefaultGravity;
 
-    public int Stage { get; private set; }
+    public int StageProgress { get; private set; }
     public int LastInteractionMove = 0;
 
     float _startTime;
@@ -47,7 +47,7 @@ public class Game : Singleton<Game>
     }
 
     public float TilePassTime =>
-        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - Stage) / (float) MaxStage);
+        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - StageProgress) / (float) MaxStage);
 
     public void Reset()
     {
@@ -56,8 +56,7 @@ public class Game : Singleton<Game>
         LastInteractionMove = -10;
         perfectChangeMove = -1;
         perfectChangeBuffer = 1;
-        Stage = 0;
-
+        StageProgress = 0;
     }
 
     public void Play()
@@ -91,14 +90,17 @@ public class Game : Singleton<Game>
             LastInteractionMove = FloorManager.Instance.TilesPassed;
 
             MovesMade++;
-            Stage = FloorManager.Instance.TilesPassed / TilesInStage;
-            Menu.Instance.UpdateUI();
             Physics.gravity = DefaultGravity * 1 / TilePassTime;
         }
     }
 
+    public void OnRunnerPassTile()
+    {
+        Menu.Instance.UpdateUI();
+        StageProgress = FloorManager.Instance.TilesPassed / TilesInStage;
+    }
 
-    public void OnPlayerPerfectChange()
+    public void OnRunnerPerfectChange()
     {
         if (perfectChangeMove == MovesMade - 1)
         {
@@ -116,7 +118,7 @@ public class Game : Singleton<Game>
         PerfectPoints += perfectChangeBuffer;
     }
 
-    public void RunOver(Vector3Int? awayDirection = null)
+    public void OnRunnerFallOver(Vector3Int? awayDirection = null)
     {
         GameManager.Instance.Player.SaveRun(
             MovesMade,

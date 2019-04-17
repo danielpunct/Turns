@@ -14,8 +14,8 @@ public class Progress : MonoBehaviour
 
     public void Display()
     {
-        currentLevel.text = (Game.Instance.Stage + 1).ToString();
-        nextLevel.text = (Game.Instance.Stage + 2).ToString();
+        currentLevel.text = (Game.Instance.StageProgress + 1).ToString();
+        nextLevel.text = (Game.Instance.StageProgress + 2).ToString();
         var newValue = (FloorManager.Instance.TilesPassed % Game.Instance.TilesInStage) / (float) Game.Instance.TilesInStage;
         t?.Kill();
         t = progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);

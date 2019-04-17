@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Gamelogic.Extensions;
 using UnityEngine;
 
@@ -8,41 +6,83 @@ public class CameraFollow : Singleton<CameraFollow>
 {
     public Transform gamePivot;
     public Transform menuPivot;
-    public Transform skinsPivot;
+    public Transform skinsPivot;   
+    public Transform holderLeftRotationPivot;
+    public Transform holderBackRotationPivot;
+    public GameObject endLevelParticlesHolder;
+
     public Transform cam;
     
     public float followMultiplier = 4;
     public Transform player;
 
-    Sequence seq;
-    
+    Sequence _seq;
+    Transform _tr;
+    bool endEffectDisplayed = false;
+
+    void Awake()
+    {
+        _tr = transform;
+    }
+
     void FixedUpdate()
     {
         if (Game.Instance.IsStarted)
         {
-            transform.position = Vector3.Lerp(transform.position, player.position, Runner.Instance.State != Runner.RunnerState.Cinematic ? Time.fixedDeltaTime * followMultiplier : 1);
+            transform.position = Vector3.Lerp(transform.position, player.position,
+                Runner.Instance.State != Runner.RunnerState.Cinematic ? Time.fixedDeltaTime * followMultiplier : 1);
+
+            if (Game.Instance.StageProgress > 0 && OperationsManager.Instance.GetPendingAction() == OperationsManager.PlayerAction.None)
+            {
+                if (!endEffectDisplayed)
+                {
+                    endLevelParticlesHolder.SetActive(true);
+                    endEffectDisplayed = true;
+                    _seq?.Kill();
+                    _seq = DOTween.Sequence()
+                        .Insert(0, _tr.DORotateQuaternion(FloorManager.Instance.CurrentDirection == VectorInt.back
+                            ? holderBackRotationPivot.rotation
+                            : holderLeftRotationPivot.rotation, 1f))
+                        .Insert(1,endLevelParticlesHolder.transform.DOScale(1,0.4f).SetEase(Ease.OutBack))
+                        ;
+
+                }
+            }
         }
+    }
+
+    void Reset()
+    {
+        _tr.rotation = Quaternion.identity;
+        endEffectDisplayed = false;
+        endLevelParticlesHolder.SetActive(false);
+        endLevelParticlesHolder.transform.localScale = Vector3.zero;
     }
 
     public void SetForMenu()
     {
-        seq?.Kill();
-        seq = DOTween.Sequence()
+        _seq?.Kill();
+        _seq = DOTween.Sequence()
             .Insert(0, transform.DOMove(player.position, Runner.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
             .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+        Reset();
     }
 
     public void SetForGame()
     {
-        seq?.Kill();
-        seq = DOTween.Sequence()
+        _seq?.Kill();
+        _seq = DOTween.Sequence()
             .Insert(0, cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+        Reset();
+
+        
     }
 
     public void SetForSkins()
     {
-        seq?.Kill();
-        seq = DOTween.Sequence()
+        _seq?.Kill();
+        _seq = DOTween.Sequence()
             .Insert(0, cam.DOLocalMove(skinsPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+        Reset();
     }
 }

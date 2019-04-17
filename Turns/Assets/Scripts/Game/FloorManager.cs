@@ -7,10 +7,10 @@ public class FloorManager : Singleton<FloorManager>
 {
     public Transform tilesHolder;
     public int TilesPassed { get; private set; }
-    
+    public Vector3Int CurrentDirection { get; private set; }
+
     Dictionary<Vector3Int, FloorTile> _tilesDict;
     LinkedList<FloorTile> _tiles;
-    Vector3Int _currentDirection = VectorInt.forward;
     int passTileBufffer;
     
     
@@ -25,7 +25,7 @@ public class FloorManager : Singleton<FloorManager>
     {
         passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
-        _currentDirection = VectorInt.forward;
+        CurrentDirection = VectorInt.forward;
         PoolManager.Instance.TilesPool.DespawnAll();
         _nextHoleBuffer = 0;
         _nextDirChangeBuffer = 0;
@@ -72,7 +72,7 @@ public class FloorManager : Singleton<FloorManager>
         AppearNewTile();
         PrepareNextTileState(false);
         
-        Menu.Instance.UpdateUI();
+        Game.Instance.OnRunnerPassTile();
     }
 
    
@@ -203,17 +203,22 @@ public class FloorManager : Singleton<FloorManager>
     
     public void PrepareNextTileState(bool init)
     {
-        if (!init)
+        var isLevelOver = Game.Instance.StageProgress > 0;
+
+        // after current level is over, wait for the direction be either one of those and "lock them"
+        if (!init && !(isLevelOver && (CurrentDirection == VectorInt.back || CurrentDirection == Vector3Int.left )))
         {
             var changeDirAllowed = 
                 _nextDirChangeBuffer <= -Game.Instance.DirChageMinDistance &&
                 _nextHoleBuffer <= -1 &&
                 _nextStairsBuffer <= 0;
             var holeAllowed = 
+                !isLevelOver &&
                 _nextHoleBuffer <= -Game.Instance.HolesMinDistance &&
                 _nextDirChangeBuffer <= -1 &&
                 _nextStairsBuffer <= -1;
             var stairsAllowed = 
+                !isLevelOver &&
                 _nextStairsBuffer <= -Game.Instance.StairsMinDistance &&
                 _nextDirChangeBuffer <= -1 &&
                 _nextHoleBuffer <= -1;
@@ -221,7 +226,6 @@ public class FloorManager : Singleton<FloorManager>
             _nextDirChangeBuffer--;
             _nextHoleBuffer--;
             _nextStairsBuffer--;
-
             
             
             if (changeQueued 
@@ -231,7 +235,6 @@ public class FloorManager : Singleton<FloorManager>
                 changeQueued = true;
                 var pondere = Random.Range(0,
                     Game.Instance.HolePondere + Game.Instance.StairePondere + Game.Instance.DirChangePondere);
-
 
                 if (holeAllowed && pondere < Game.Instance.HolePondere) // if do hole
                 {
@@ -247,7 +250,7 @@ public class FloorManager : Singleton<FloorManager>
                 }
                 else if (changeDirAllowed) // change dir
                 {
-                    _currentDirection = GetChangedRandomDirection(_currentDirection, _tiles.Last.Value.PositionKey);
+                    CurrentDirection = GetChangedRandomDirection(CurrentDirection, _tiles.Last.Value.PositionKey);
                     _nextDirChangeBuffer = Game.Instance.DirChageMinDistance;
                     changeQueued = false;
                 }
@@ -259,6 +262,6 @@ public class FloorManager : Singleton<FloorManager>
             }
         }
 
-        _nextTilePosition += _currentDirection;
+        _nextTilePosition += CurrentDirection;
     }
 }

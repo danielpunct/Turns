@@ -39,7 +39,7 @@ public class OperationsManager : Singleton<OperationsManager>
         }
     }
 
-    PlayerAction GetPendingAction()
+    public PlayerAction GetPendingAction()
     {
         var pendingAction = PlayerAction.Invalid;
 

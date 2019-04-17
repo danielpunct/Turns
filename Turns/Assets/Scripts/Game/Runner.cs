@@ -155,7 +155,7 @@ public class Runner : Singleton<Runner>
 
         if (WasPerfectChange(transform.localPosition, Direction))
         {
-            Game.Instance.OnPlayerPerfectChange();
+            Game.Instance.OnRunnerPerfectChange();
         }
 
         var eulerRotation = Quaternion.LookRotation(Direction, Vector3.up).eulerAngles;
@@ -245,7 +245,7 @@ public class Runner : Singleton<Runner>
         {
             if (tilePosition.y - _lastSteppedTile.PositionKey.y < -1)
             {
-                Game.Instance.RunOver();
+                Game.Instance.OnRunnerFallOver();
             }
         }
 
