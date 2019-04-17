@@ -25,6 +25,10 @@ public class Runner : Singleton<Runner>
     public Vector3Int? LastTilePosition = Vector3Int.zero;
 
     public float Speed => (1 / Game.Instance.TilePassTime * Time.fixedDeltaTime);
+
+    public bool IsWinWalking =>
+        FloorManager.Instance.IsLevelOverAndLocked &&
+        OperationsManager.Instance.GetPendingAction() == OperationsManager.PlayerAction.None;
     
     RunnerModel _currentModel;
 

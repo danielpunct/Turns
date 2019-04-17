@@ -9,6 +9,10 @@ public class FloorManager : Singleton<FloorManager>
     public int TilesPassed { get; private set; }
     public Vector3Int CurrentDirection { get; private set; }
 
+    public bool IsLevelOverAndLocked =>
+        Game.Instance.StageProgress > 0 &&
+        (CurrentDirection == VectorInt.back || CurrentDirection == Vector3Int.left);
+
     Dictionary<Vector3Int, FloorTile> _tilesDict;
     LinkedList<FloorTile> _tiles;
     int passTileBufffer;

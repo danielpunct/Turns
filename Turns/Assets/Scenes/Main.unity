@@ -45138,7 +45138,7 @@ MonoBehaviour:
   StairePondere: 20
   DirChangePondere: 59
   MaxStage: 15
-  TilesInStage: 100
+  TilesInStage: 15
   DirChageMinDistance: 1
   HoleLength: 1
   HolesMinDistance: 2

@@ -78,7 +78,7 @@ public class Game : Singleton<Game>
 
     public void UserTap()
     {
-        if (FloorManager.Instance.TilesPassed - LastInteractionMove < 2)
+        if (FloorManager.Instance.TilesPassed - LastInteractionMove < 2 || Runner.Instance.IsWinWalking)
         {
             return;
         }

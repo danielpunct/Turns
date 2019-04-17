@@ -32,7 +32,7 @@ public class CameraFollow : Singleton<CameraFollow>
             transform.position = Vector3.Lerp(transform.position, player.position,
                 Runner.Instance.State != Runner.RunnerState.Cinematic ? Time.fixedDeltaTime * followMultiplier : 1);
 
-            if (Game.Instance.StageProgress > 0 && OperationsManager.Instance.GetPendingAction() == OperationsManager.PlayerAction.None)
+            if (Runner.Instance.IsWinWalking)
             {
                 if (!endEffectDisplayed)
                 {
@@ -45,7 +45,6 @@ public class CameraFollow : Singleton<CameraFollow>
                             : holderLeftRotationPivot.rotation, 1f))
                         .Insert(1,endLevelParticlesHolder.transform.DOScale(1,0.4f).SetEase(Ease.OutBack))
                         ;
-
                 }
             }
         }
