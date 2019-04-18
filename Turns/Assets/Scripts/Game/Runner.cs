@@ -28,7 +28,8 @@ public class Runner : Singleton<Runner>
 
     public bool IsWinWalking =>
         FloorManager.Instance.IsLevelOverAndLocked &&
-        OperationsManager.Instance.GetPendingAction() == OperationsManager.PlayerAction.None;
+        OperationsManager.Instance.GetPendingAction() == OperationsManager.PlayerAction.None &&
+        Direction == FloorManager.Instance.CurrentDirection;
     
     RunnerModel _currentModel;
 

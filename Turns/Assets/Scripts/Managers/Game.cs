@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class Game : Singleton<Game>
 {
     public TMP_Text _debug;
-    public bool IsStarted { get; private set; }
+    public bool IsStarted { get; set; }
 
     // time player takes to pass a tile
     public float initialTilePassTime = 0.4f;
@@ -30,16 +30,19 @@ public class Game : Singleton<Game>
     public int StairsLength = 2;
     public int StairsMinDistance = 2;
     public float PerfectChangeThreshold = 0.1f;
-    public int MovesMade { get; private set; }
-    public int PerfectPoints { get; private set; }
     [ReadOnly] public Vector3 DefaultGravity;
 
-    public int StageProgress { get; private set; }
-    public int LastInteractionMove = 0;
+   
+    public int MovesMade { get; private set; }
+    public int PerfectPoints { get; private set; }
+    public bool StageFinished { get; private set; }
+    public int CurrentStage { get; private set; }
+    
 
+    int _lastInteractionMove = 0;
     float _startTime;
-    int perfectChangeMove = -1;
-    int perfectChangeBuffer = 1;
+    int _perfectChangeMove = -1;
+    int _perfectChangeBuffer = 1;
 
     void Awake()
     {
@@ -47,16 +50,20 @@ public class Game : Singleton<Game>
     }
 
     public float TilePassTime =>
-        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - StageProgress) / (float) MaxStage);
+        Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - CurrentStage) / (float) MaxStage);
+    
+    public bool StageFinishable =>
+        FloorManager.Instance.TilesPassed / TilesInStage > 0; 
 
     public void Reset()
     {
         MovesMade = 0;
         PerfectPoints = 0;
-        LastInteractionMove = -10;
-        perfectChangeMove = -1;
-        perfectChangeBuffer = 1;
-        StageProgress = 0;
+        _lastInteractionMove = -10;
+        _perfectChangeMove = -1;
+        _perfectChangeBuffer = 1;
+        CurrentStage = GameManager.Instance.Player.LevelSelected + 1;
+        StageFinished = false;
     }
 
     public void Play()
@@ -65,6 +72,14 @@ public class Game : Singleton<Game>
 
         StartCoroutine(BeginAfterCountdown());
         IsStarted = true;
+    }
+    
+    public void ResetWorld()
+    {
+        Runner.Instance.Reset(); // need to be done before camera
+        CameraFollow.Instance.SetForMenu();
+        FloorManager.Instance.Reset();
+        MomentsRecorderHelper.Instance.StopReplay();
     }
 
     IEnumerator BeginAfterCountdown()
@@ -78,7 +93,7 @@ public class Game : Singleton<Game>
 
     public void UserTap()
     {
-        if (FloorManager.Instance.TilesPassed - LastInteractionMove < 2 || Runner.Instance.IsWinWalking)
+        if (FloorManager.Instance.TilesPassed - _lastInteractionMove < 2 || Runner.Instance.IsWinWalking)
         {
             return;
         }
@@ -87,7 +102,7 @@ public class Game : Singleton<Game>
         if (Runner.Instance.State == Runner.RunnerState.Running)
         {
             OperationsManager.Instance.DoNextAction();
-            LastInteractionMove = FloorManager.Instance.TilesPassed;
+            _lastInteractionMove = FloorManager.Instance.TilesPassed;
 
             MovesMade++;
             Physics.gravity = DefaultGravity * 1 / TilePassTime;
@@ -97,36 +112,52 @@ public class Game : Singleton<Game>
     public void OnRunnerPassTile()
     {
         Menu.Instance.UpdateUI();
-        StageProgress = FloorManager.Instance.TilesPassed / TilesInStage;
     }
 
     public void OnRunnerPerfectChange()
     {
-        if (perfectChangeMove == MovesMade - 1)
+        if (_perfectChangeMove == MovesMade - 1)
         {
-            perfectChangeBuffer += perfectChangeBuffer == 1 ? 1 : 2;
+            _perfectChangeBuffer += _perfectChangeBuffer == 1 ? 1 : 2;
         }
         else
         {
-            perfectChangeBuffer = 1;
+            _perfectChangeBuffer = 1;
         }
 
-        perfectChangeMove = MovesMade;
+        _perfectChangeMove = MovesMade;
 
 //        Menu.Instance.comboUI.Show(perfectChangeBuffer + "x");
-        Menu.Instance.comboUI.Show($"+{perfectChangeBuffer}");
-        PerfectPoints += perfectChangeBuffer;
+        Menu.Instance.comboUI.Show($"+{_perfectChangeBuffer}");
+        PerfectPoints += _perfectChangeBuffer;
     }
 
     public void OnRunnerFallOver(Vector3Int? awayDirection = null)
+    {
+       OnLevelFinished();
+    }
+
+    public void OnRunnerJumpToWarp()
+    {
+        Menu.Instance.HideInGameMenu();
+    }
+
+    public void OnRunnerWarped()
+    {
+        StageFinished = true;
+        OnLevelFinished();
+    }
+
+    void OnLevelFinished()
     {
         GameManager.Instance.Player.SaveRun(
             MovesMade,
             Time.fixedTime - _startTime,
             FloorManager.Instance.TilesPassed,
-            PerfectPoints);
+            PerfectPoints,
+            StageFinished ? CurrentStage : GameManager.Instance.Player.MaxLevelPassed,
+            !StageFinished);
 
-        GameManager.Instance.GameOver();
-        IsStarted = false;
+        GameManager.Instance.LevelOver(StageFinished);
     }
 }

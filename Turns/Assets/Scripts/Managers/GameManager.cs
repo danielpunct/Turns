@@ -30,8 +30,18 @@ public class GameManager : Singleton<GameManager>
         Menu.Instance.UpdateUI();
     }
 
-    public void GameOver()
+    public void LevelOver(bool levelPassed)
     {
-        Menu.Instance.ShowMenu(false);
+        if (!levelPassed)
+        {
+            Menu.Instance.ShowMenu(false);
+            Game.Instance.IsStarted = false;
+        }
+
+        else
+        {
+            Game.Instance.ResetWorld();
+            StartAnotherGame();
+        }
     }
 }

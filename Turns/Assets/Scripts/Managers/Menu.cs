@@ -61,13 +61,7 @@ public class Menu : Singleton<Menu>
         bestRunText.text = "Highscore : " + GameManager.Instance.Player.MaxPoints;
     }
 
-    void ResetWorld()
-    {
-        Runner.Instance.Reset(); // need to be done before camera
-        CameraFollow.Instance.SetForMenu();
-        FloorManager.Instance.Reset();
-        MomentsRecorderHelper.Instance.StopReplay();
-    }
+   
 
     public void ShowMenu(bool init)
     {
@@ -85,7 +79,7 @@ public class Menu : Singleton<Menu>
             elementsMain.SetActive(true);
             elementsAfterDie.SetActive(false);
             switchButtons(_menuSeq, 1, true, false);
-            ResetWorld();
+            Game.Instance.ResetWorld();
             _menuSeq
                 .Insert(1, titleText.DOFade(1, 3))
                 .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
@@ -124,9 +118,9 @@ public class Menu : Singleton<Menu>
         elementsMain.SetActive(true);
         elementsAfterDie.SetActive(false);
         switchButtons(_menuSeq, 1, true, false);
-        ResetWorld();
+        Game.Instance.ResetWorld();
         _2ndMenuSeq?.Kill();
-        _2ndMenuSeq = DOTween.Sequence()
+        _2ndMenuSeq = DOTween.Sequence() 
             .Insert(0, titleText.DOFade(1, 3))
             .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
     }
@@ -135,6 +129,7 @@ public class Menu : Singleton<Menu>
     {
         menuUIHolder.SetActive(false);
         gameUIHolder.SetActive(true);
+        progressUI.transform.DOLocalMoveY(0, 0);
         MomentsRecorderHelper.Instance.ResetRecording();
         lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
         
@@ -144,10 +139,9 @@ public class Menu : Singleton<Menu>
     public void OnPlayClick()
     {
         _menuSeq?.Kill();
-        ResetWorld();
+        Game.Instance.ResetWorld();
         GameManager.Instance.StartAnotherGame();
     }
-
 
     public void UpdateUI()
     {
@@ -202,5 +196,12 @@ public class Menu : Singleton<Menu>
             .Insert(offset + eachOffset * 3,
                 buttonHolder4.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
                     .SetEase(Ease.OutBack));
+    }
+
+    public void HideInGameMenu()
+    {
+        _menuSeq?.Kill();
+        _menuSeq = DOTween.Sequence()
+            .Insert(0, progressUI.transform.DOLocalMoveY(500, 1));
     }
 }

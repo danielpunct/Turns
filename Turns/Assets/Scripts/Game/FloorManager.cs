@@ -10,12 +10,12 @@ public class FloorManager : Singleton<FloorManager>
     public Vector3Int CurrentDirection { get; private set; }
 
     public bool IsLevelOverAndLocked =>
-        Game.Instance.StageProgress > 0 &&
+        Game.Instance.StageFinishable &&
         (CurrentDirection == VectorInt.back || CurrentDirection == Vector3Int.left);
 
     Dictionary<Vector3Int, FloorTile> _tilesDict;
     LinkedList<FloorTile> _tiles;
-    int passTileBufffer;
+    int _passTileBuffer;
     
     
     // --- NEXT TILE STATE --- 
@@ -27,7 +27,7 @@ public class FloorManager : Singleton<FloorManager>
 
     public void Reset()
     {
-        passTileBufffer = Game.Instance.PlayerPassTilesBuffer;
+        _passTileBuffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;
         CurrentDirection = VectorInt.forward;
         PoolManager.Instance.TilesPool.DespawnAll();
@@ -57,7 +57,7 @@ public class FloorManager : Singleton<FloorManager>
 
     public void OnPlayerPassedTile()
     {
-        if (passTileBufffer-- > 0)
+        if (_passTileBuffer-- > 0)
         {
             return;
         }
@@ -207,7 +207,7 @@ public class FloorManager : Singleton<FloorManager>
     
     public void PrepareNextTileState(bool init)
     {
-        var isLevelOver = Game.Instance.StageProgress > 0;
+        var isLevelOver = Game.Instance.StageFinishable;
 
         // after current level is over, wait for the direction be either one of those and "lock them"
         if (!init && !(isLevelOver && (CurrentDirection == VectorInt.back || CurrentDirection == Vector3Int.left )))

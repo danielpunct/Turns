@@ -10,15 +10,18 @@ public class Progress : MonoBehaviour
     public Slider progressSlider;   
     public TMP_Text pointsText;
 
-    Tween t;
+    Tween _t;
 
     public void Display()
     {
-        currentLevel.text = (Game.Instance.StageProgress + 1).ToString();
-        nextLevel.text = (Game.Instance.StageProgress + 2).ToString();
-        var newValue = (FloorManager.Instance.TilesPassed % Game.Instance.TilesInStage) / (float) Game.Instance.TilesInStage;
-        t?.Kill();
-        t = progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);
+        currentLevel.text = (Game.Instance.CurrentStage).ToString();
+        nextLevel.text = (Game.Instance.CurrentStage + 1).ToString();
+        var newValue = Game.Instance.StageFinishable
+            ? 1
+            : (FloorManager.Instance.TilesPassed % Game.Instance.TilesInStage) / (float) Game.Instance.TilesInStage;
+        
+        _t?.Kill();
+        _t = progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);
         pointsText.text = (Game.Instance.PerfectPoints + Game.Instance.MovesMade).ToString();
     }
 }

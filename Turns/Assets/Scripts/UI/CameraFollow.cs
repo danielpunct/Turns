@@ -44,6 +44,9 @@ public class CameraFollow : Singleton<CameraFollow>
                             ? holderBackRotationPivot.rotation
                             : holderLeftRotationPivot.rotation, 1f))
                         .Insert(1,endLevelParticlesHolder.transform.DOScale(1,0.4f).SetEase(Ease.OutBack))
+                        .Insert(1.4f,endLevelParticlesHolder.transform.DOScale(2,10f))
+                        .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp())
+                        .InsertCallback(4.5f, () => Game.Instance.OnRunnerWarped())
                         ;
                 }
             }
