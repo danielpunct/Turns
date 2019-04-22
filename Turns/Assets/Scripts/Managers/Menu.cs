@@ -30,6 +30,7 @@ public class Menu : Singleton<Menu>
     [Header("Game")] public GameObject gameUIHolder;
     public Progress progressUI;
     public ComboUI comboUI;
+    public CanvasGroup elementsLevelPassed;
 
     Sequence _menuSeq;
     Sequence _skinsSeq;
@@ -129,6 +130,7 @@ public class Menu : Singleton<Menu>
     {
         menuUIHolder.SetActive(false);
         gameUIHolder.SetActive(true);
+        elementsLevelPassed.gameObject.SetActive(false);
         progressUI.transform.DOLocalMoveY(0, 0);
         MomentsRecorderHelper.Instance.ResetRecording();
         lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
@@ -203,5 +205,12 @@ public class Menu : Singleton<Menu>
         _menuSeq?.Kill();
         _menuSeq = DOTween.Sequence()
             .Insert(0, progressUI.transform.DOLocalMoveY(500, 1));
+    }
+
+    public void ShowLevelPassedMenu()
+    {
+        elementsLevelPassed.alpha = 0;
+        elementsLevelPassed.gameObject.SetActive(true);
+        elementsLevelPassed.DOFade(1, 1);
     }
 }

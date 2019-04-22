@@ -193,8 +193,16 @@ public class Runner : Singleton<Runner>
     {
         _seq?.Kill();
         _seq = DOTween.Sequence()
-            .Insert(0.3f, _tr.DOScale(0, 2))
-            .InsertCallback(1.5f, () => { gameObject.SetActive(false); })
+            .Insert(0.3f, _tr.DOScale(0, 1.7f))
+            .InsertCallback(1.2f, () =>
+            {
+                gameObject.SetActive(false);
+                CameraFollow.Instance.ShowConfetti();
+            })
+            .InsertCallback(1.5f, () =>
+            {
+                Menu.Instance.ShowLevelPassedMenu();
+            })
             .InsertCallback(4.5f, () => { Game.Instance.OnRunnerWarped(); });
 
         Physics.gravity = Game.Instance.DefaultGravity;

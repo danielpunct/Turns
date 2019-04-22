@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DG.Tweening;
-using Gamelogic.Extensions;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Rotate : MonoBehaviour
 {
-
     Transform tr;
     float rotattion = 0.01f;
+
     void Awake()
     {
         tr = transform;

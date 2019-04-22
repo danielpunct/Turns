@@ -9,7 +9,8 @@ public class CameraFollow : Singleton<CameraFollow>
     public Transform skinsPivot;   
     public Transform holderLeftRotationPivot;
     public Transform holderBackRotationPivot;
-    public GameObject endLevelParticlesHolder;
+    public GameObject endLevelPortalHolder;
+    public GameObject endLevelConfettiHolder;
 
     public Transform cam;
     
@@ -36,28 +37,33 @@ public class CameraFollow : Singleton<CameraFollow>
             {
                 if (!endEffectDisplayed)
                 {
-                    endLevelParticlesHolder.SetActive(true);
+                    endLevelPortalHolder.SetActive(true);
                     endEffectDisplayed = true;
                     _seq?.Kill();
                     _seq = DOTween.Sequence()
                         .Insert(0, _tr.DORotateQuaternion(FloorManager.Instance.CurrentDirection == VectorInt.back
                             ? holderBackRotationPivot.rotation
                             : holderLeftRotationPivot.rotation, 1f))
-                        .Insert(1,endLevelParticlesHolder.transform.DOScale(1,0.4f).SetEase(Ease.OutBack))
-                        .Insert(1.4f,endLevelParticlesHolder.transform.DOScale(2,10f))
-                        .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp())
-                        ;
+                        .Insert(1, endLevelPortalHolder.transform.DOScale(1, 0.4f).SetEase(Ease.OutBack))
+                        .Insert(1.4f, endLevelPortalHolder.transform.DOScale(2, 10f))
+                        .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp());
                 }
             }
         }
+    }
+
+    public void ShowConfetti()
+    {
+        endLevelConfettiHolder.SetActive(true);
     }
 
     void Reset()
     {
         _tr.DORotateQuaternion(Quaternion.identity, 0.5f);
         endEffectDisplayed = false;
-        endLevelParticlesHolder.SetActive(false);
-        endLevelParticlesHolder.transform.localScale = Vector3.zero;
+        endLevelPortalHolder.SetActive(false);
+        endLevelConfettiHolder.SetActive(false);
+        endLevelPortalHolder.transform.localScale = Vector3.zero;
     }
 
     public void SetForMenu()
