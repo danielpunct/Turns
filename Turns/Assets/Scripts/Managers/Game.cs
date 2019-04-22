@@ -140,6 +140,7 @@ public class Game : Singleton<Game>
     public void OnRunnerJumpToWarp()
     {
         Menu.Instance.HideInGameMenu();
+        Runner.Instance.Jump_EndLevel();
     }
 
     public void OnRunnerWarped()

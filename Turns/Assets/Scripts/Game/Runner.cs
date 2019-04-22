@@ -98,6 +98,7 @@ public class Runner : Singleton<Runner>
 
     public void Reset()
     {
+        gameObject.SetActive(true);
         State = RunnerState.Cinematic;
         _currentModel.Reset();
 
@@ -188,6 +189,18 @@ public class Runner : Singleton<Runner>
         _rb.AddForce(-Game.Instance.DefaultGravity * 8);
     }
 
+    public void Jump_EndLevel()
+    {
+        _seq?.Kill();
+        _seq = DOTween.Sequence()
+            .Insert(0.3f, _tr.DOScale(0, 2))
+            .InsertCallback(1.5f, () => { gameObject.SetActive(false); })
+            .InsertCallback(4.5f, () => { Game.Instance.OnRunnerWarped(); });
+
+        Physics.gravity = Game.Instance.DefaultGravity;
+        _rb.AddForce(-Game.Instance.DefaultGravity * 12);
+    }
+
 
     float m_GroundCheckDistance = 0.1f;
     bool _lifted = false;
@@ -197,7 +210,7 @@ public class Runner : Singleton<Runner>
         RaycastHit hitInfo;
 #if UNITY_EDITOR
         // helper to visualise the ground check ray in the scene view
-        Debug.DrawLine(transform.position, transform.position + (Vector3.down * m_GroundCheckDistance));
+        Debug.DrawLine(transform.position, _tr.position + (Vector3.down * m_GroundCheckDistance));
 #endif
         if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, m_GroundCheckDistance))
         {

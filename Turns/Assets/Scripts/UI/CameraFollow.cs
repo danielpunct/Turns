@@ -46,7 +46,6 @@ public class CameraFollow : Singleton<CameraFollow>
                         .Insert(1,endLevelParticlesHolder.transform.DOScale(1,0.4f).SetEase(Ease.OutBack))
                         .Insert(1.4f,endLevelParticlesHolder.transform.DOScale(2,10f))
                         .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp())
-                        .InsertCallback(4.5f, () => Game.Instance.OnRunnerWarped())
                         ;
                 }
             }
@@ -55,7 +54,7 @@ public class CameraFollow : Singleton<CameraFollow>
 
     void Reset()
     {
-        _tr.rotation = Quaternion.identity;
+        _tr.DORotateQuaternion(Quaternion.identity, 0.5f);
         endEffectDisplayed = false;
         endLevelParticlesHolder.SetActive(false);
         endLevelParticlesHolder.transform.localScale = Vector3.zero;
@@ -76,8 +75,6 @@ public class CameraFollow : Singleton<CameraFollow>
         _seq = DOTween.Sequence()
             .Insert(0, cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
         Reset();
-
-        
     }
 
     public void SetForSkins()
