@@ -193,6 +193,7 @@ public class Runner : Singleton<Runner>
     {
         _seq?.Kill();
         _seq = DOTween.Sequence()
+            .Insert(0.3f, _tr.DOScale(0, 1.7f))
             .InsertCallback(1.2f, () =>
             {
                 gameObject.SetActive(false);
@@ -204,8 +205,8 @@ public class Runner : Singleton<Runner>
             })
             .InsertCallback(4.5f, () => { Game.Instance.OnRunnerWarped(); });
 
-        //Physics.gravity = Game.Instance.DefaultGravity;
-        //_rb.AddForce(-Game.Instance.DefaultGravity * 12);
+        Physics.gravity = Game.Instance.DefaultGravity;
+        _rb.AddForce(-Game.Instance.DefaultGravity * 12);
     }
 
 

@@ -46,7 +46,6 @@ public class CameraFollow : Singleton<CameraFollow>
                             : holderLeftRotationPivot.rotation, 1f))
                         .Insert(1, endLevelPortalHolder.transform.DOScale(1, 0.4f).SetEase(Ease.OutBack))
                         .Insert(1.4f, endLevelPortalHolder.transform.DOScale(2, 10f))
-                        // come back to play camera
                         .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp());
                 }
             }
