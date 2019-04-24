@@ -12,6 +12,8 @@ public class Menu : Singleton<Menu>
     public ColorSuite cameraColorSuite;
     
     [Header("Menu")] public GameObject menuUIHolder;
+    public GameObject defaultHolder;
+    public GameObject gameOverHolder;
     public TMP_Text titleText;
     public CanvasGroup lateHolder;
     public GameObject elementsMain;
@@ -24,6 +26,7 @@ public class Menu : Singleton<Menu>
     public Skins skins;
     public GameObject skinButtonsHolder;
     public TMP_Text bestRunText;
+    public TMP_Text yourRunText;
     public TMP_Text lastMovesText;
     public TMP_Text lastTimeText;
 
@@ -59,10 +62,9 @@ public class Menu : Singleton<Menu>
         titleText.DOFade(0, 0);
         
         skinButtonsHolder.SetActive(false);
-        bestRunText.text = "Highscore : " + GameManager.Instance.Player.MaxPoints;
+        bestRunText.text = "Best Score\n" + GameManager.Instance.Player.MaxPoints;
+        yourRunText.text =  GameManager.Instance.Player.LastPoints.ToString();
     }
-
-   
 
     public void ShowMenu(bool init)
     {
@@ -74,6 +76,9 @@ public class Menu : Singleton<Menu>
         _menuSeq?.Kill();
         _menuSeq = DOTween.Sequence()
             .Insert(1, lateHolder.DOFade(1, 1f));
+        
+        defaultHolder.SetActive(init);
+        gameOverHolder.SetActive(!init);
 
         if (init)
         {
