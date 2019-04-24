@@ -209,8 +209,8 @@ public class Menu : Singleton<Menu>
 
     public void ShowLevelPassedMenu()
     {
-        elementsLevelPassed.alpha = 0;
-        elementsLevelPassed.gameObject.SetActive(true);
-        elementsLevelPassed.DOFade(1, 1);
+//        elementsLevelPassed.alpha = 0;
+//        elementsLevelPassed.gameObject.SetActive(true);
+//        elementsLevelPassed.DOFade(1, 1);
     }
 }

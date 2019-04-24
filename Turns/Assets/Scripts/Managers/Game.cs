@@ -134,7 +134,7 @@ public class Game : Singleton<Game>
 
     public void OnRunnerFallOver(Vector3Int? awayDirection = null)
     {
-       OnLevelFinished();
+       OnRunDie();
     }
 
     public void OnRunnerJumpToWarp()
@@ -145,11 +145,12 @@ public class Game : Singleton<Game>
 
     public void OnRunnerWarped()
     {
+        CameraFollow.Instance.SetForGame();
         StageFinished = true;
-        OnLevelFinished();
+        OnContinueNextLevel();
     }
 
-    void OnLevelFinished()
+    void OnRunDie()
     {
         GameManager.Instance.Player.SaveRun(
             MovesMade,
@@ -160,5 +161,10 @@ public class Game : Singleton<Game>
             !StageFinished);
 
         GameManager.Instance.LevelOver(StageFinished);
+    }
+
+    void OnContinueNextLevel()
+    {
+        
     }
 }
