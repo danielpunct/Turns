@@ -23,25 +23,31 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    public void StartAnotherGame()
+    public void StartAnotherGame(bool continueLevel)
     {
-        Game.Instance.Play();
+        Game.Instance.ResetAndPlay(continueLevel);
         Menu.Instance.ShowGameMenu();
         Menu.Instance.UpdateUI();
     }
 
-    public void LevelOver(bool levelPassed)
+    public void LevelFailed()
     {
-        if (!levelPassed)
-        {
-            Menu.Instance.ShowMenu(false);
-            Game.Instance.IsStarted = false;
-        }
+        Player.SaveRun(
+            Game.Instance.MovesMade,
+            Game.Instance.GameDuration,
+            FloorManager.Instance.TilesPassed,
+            Game.Instance.PerfectPoints,
+            Game.Instance.CurrentStage - 1,
+            true);
 
-        else
-        {
-            Game.Instance.ResetWorld();
-            StartAnotherGame();
-        }
+        Menu.Instance.ShowMenu(false);
+        Game.Instance.IsStarted = false;
     }
+
+    public void LevelPassed()
+    {
+        Game.Instance.ResetWorld(true);
+        StartAnotherGame(true);
+    }
+    
 }

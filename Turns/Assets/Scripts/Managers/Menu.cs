@@ -80,7 +80,7 @@ public class Menu : Singleton<Menu>
             elementsMain.SetActive(true);
             elementsAfterDie.SetActive(false);
             switchButtons(_menuSeq, 1, true, false);
-            Game.Instance.ResetWorld();
+            Game.Instance.ResetWorld(false);
             _menuSeq
                 .Insert(1, titleText.DOFade(1, 3))
                 .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
@@ -119,7 +119,7 @@ public class Menu : Singleton<Menu>
         elementsMain.SetActive(true);
         elementsAfterDie.SetActive(false);
         switchButtons(_menuSeq, 1, true, false);
-        Game.Instance.ResetWorld();
+        Game.Instance.ResetWorld(false);
         _2ndMenuSeq?.Kill();
         _2ndMenuSeq = DOTween.Sequence() 
             .Insert(0, titleText.DOFade(1, 3))
@@ -141,8 +141,8 @@ public class Menu : Singleton<Menu>
     public void OnPlayClick()
     {
         _menuSeq?.Kill();
-        Game.Instance.ResetWorld();
-        GameManager.Instance.StartAnotherGame();
+        Game.Instance.ResetWorld(false);
+        GameManager.Instance.StartAnotherGame(false);
     }
 
     public void UpdateUI()

@@ -9,6 +9,7 @@ public class Runner : Singleton<Runner>
     public enum RunnerState
     {
         Cinematic,
+        EndCinematic,
         Running,
         Falling,
         Jumping
@@ -191,19 +192,16 @@ public class Runner : Singleton<Runner>
 
     public void Jump_EndLevel()
     {
+        State = RunnerState.EndCinematic;
         _seq?.Kill();
         _seq = DOTween.Sequence()
             .Insert(0.3f, _tr.DOScale(0, 1.7f))
             .InsertCallback(1.2f, () =>
             {
                 gameObject.SetActive(false);
-                CameraFollow.Instance.ShowConfetti();
-            })
-            .InsertCallback(1.5f, () =>
-            {
-                Menu.Instance.ShowLevelPassedMenu();
-            })
-            .InsertCallback(4.5f, () => { Game.Instance.OnRunnerWarped(); });
+                CameraFollow.Instance.ShowConfetti(); 
+                Game.Instance.OnRunnerWarped(); 
+            });
 
         Physics.gravity = Game.Instance.DefaultGravity;
         _rb.AddForce(-Game.Instance.DefaultGravity * 12);

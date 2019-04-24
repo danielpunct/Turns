@@ -171,16 +171,68 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   __messageText: 
+  cam: {fileID: 534669905}
   gamePivot: {fileID: 977873628}
   menuPivot: {fileID: 2011040580}
   skinsPivot: {fileID: 440791497}
   holderLeftRotationPivot: {fileID: 2034413240}
   holderBackRotationPivot: {fileID: 587210616}
-  endLevelPortalHolder: {fileID: 955640411}
-  endLevelConfettiHolder: {fileID: 8173257466886275927}
-  cam: {fileID: 534669905}
   followMultiplier: 4
   player: {fileID: 2015505844}
+  endLevelEffectsOrientedHolder: {fileID: 429159940}
+  endLevelPortalHolder: {fileID: 955640411}
+  endLevelConfettiHolder: {fileID: 8173257466886275930}
+  portalScaleCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.0401038
+      value: 0.32050338
+      inSlope: 0.21518558
+      outSlope: 0.21518558
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.06896433
+      value: 0.2996367
+      inSlope: -0.517766
+      outSlope: -0.517766
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.090238184
+      value: 0.30747482
+      inSlope: 1.289255
+      outSlope: 1.289255
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.029296154
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: -0.08847489
+      outSlope: -0.08847489
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.04753942
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!114 &97446152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6715,7 +6767,7 @@ GameObject:
   - component: {fileID: 356184531}
   - component: {fileID: 356184530}
   m_Layer: 1
-  m_Name: 'Next Level Portal '
+  m_Name: 'PS Portal '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11966,6 +12018,38 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 415353787}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &429159939
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 429159940}
+  m_Layer: 0
+  m_Name: holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &429159940
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 429159939}
+  m_LocalRotation: {x: -0.02113409, y: -0, z: -0.000000022351742, w: 0.9997767}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 955640412}
+  - {fileID: 8173257466886275928}
+  m_Father: {fileID: 1292215567}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: -2.4220002, y: 0, z: 0}
 --- !u!1 &432369848
 GameObject:
   m_ObjectHideFlags: 0
@@ -29944,12 +30028,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 955640411}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0.1229609, y: 0.8402486, z: -0.21401268, w: 0.48276448}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 356184529}
-  m_Father: {fileID: 1106977472}
+  m_Father: {fileID: 429159940}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &962691165
@@ -30507,8 +30591,7 @@ Transform:
   m_LocalPosition: {x: -5.2590904, y: -1.31513, z: -3.0774198}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 955640412}
-  - {fileID: 8173257466886275928}
+  - {fileID: 1292215567}
   m_Father: {fileID: 97446150}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -31166,6 +31249,37 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 1256092303}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1292215566
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1292215567}
+  m_Layer: 0
+  m_Name: rotated holder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1292215567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1292215566}
+  m_LocalRotation: {x: 0.1229609, y: -0.8402486, z: 0.21401268, w: 0.48276448}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 429159940}
+  m_Father: {fileID: 1106977472}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 28.579, y: -120.241005, z: 0}
 --- !u!1 &1296955777
 GameObject:
   m_ObjectHideFlags: 0
@@ -57910,7 +58024,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -57977,8 +58091,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 15
-      minScalar: 5
+      scalar: 1.5
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -58030,7 +58144,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 16.9
+      scalar: 3.6401918
       minScalar: 45.4
       maxCurve:
         serializedVersion: 2
@@ -58468,7 +58582,7 @@ ParticleSystem:
     gravityModifier:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.2
+      scalar: 0.5
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -58522,7 +58636,7 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 4
-    angle: 65.04905
+    angle: 67.12787
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -58608,7 +58722,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 3.4172235
+      value: 7.3653817
       mode: 0
       spread: 0
       speed:
@@ -58919,10 +59033,19 @@ ParticleSystem:
           inWeight: 0.33333334
           outWeight: 0.33333334
         - serializedVersion: 3
+          time: 0.64061856
+          value: 0.6989946
+          inSlope: -0.94877446
+          outSlope: -0.94877446
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0.33333334
+          outWeight: 0.33333334
+        - serializedVersion: 3
           time: 1
           value: 0
-          inSlope: -1.0312483
-          outSlope: -1.0312483
+          inSlope: -1.9449935
+          outSlope: -1.9449935
           tangentMode: 34
           weightedMode: 0
           inWeight: 0.33333334
@@ -60442,7 +60565,7 @@ ParticleSystem:
     magnitude:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 2.39
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -60496,7 +60619,7 @@ ParticleSystem:
     inWorldSpace: 0
     multiplyDragByParticleSize: 1
     multiplyDragByParticleVelocity: 1
-    dampen: 0.05
+    dampen: 0.12
     drag:
       serializedVersion: 2
       minMaxState: 0
@@ -62631,12 +62754,12 @@ GameObject:
   - component: {fileID: 8173257466886275930}
   - component: {fileID: 8173257466886275929}
   m_Layer: 5
-  m_Name: Particle System - confetti
+  m_Name: PS confetti - on
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8173257466886275928
 Transform:
   m_ObjectHideFlags: 0
@@ -62644,12 +62767,12 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8173257466886275927}
-  m_LocalRotation: {x: -0.48276767, y: -0.2140145, z: -0.840246, w: 0.122963145}
-  m_LocalPosition: {x: -51.9, y: -22.9, z: -30.2}
-  m_LocalScale: {x: 1.5575548, y: 1.557555, z: 1.5575542}
+  m_LocalRotation: {x: -1, y: 0.0000019967554, z: 0.000003676861, w: 0.0000027567146}
+  m_LocalPosition: {x: 0.048599243, y: 8.61488, z: 63.685497}
+  m_LocalScale: {x: 1.5575558, y: 1.5575562, z: 1.5575547}
   m_Children:
   - {fileID: 8173257466295764445}
-  m_Father: {fileID: 1106977472}
+  m_Father: {fileID: 429159940}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: -151.421, y: -120.241, z: -0.000015258789}
 --- !u!199 &8173257466886275929
@@ -62722,7 +62845,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8173257466886275927}
   serializedVersion: 6
-  lengthInSec: 10.8
+  lengthInSec: 5
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
@@ -62730,7 +62853,7 @@ ParticleSystem:
   ringBufferLoopRange: {x: 0, y: 1}
   looping: 0
   prewarm: 0
-  playOnAwake: 1
+  playOnAwake: 0
   useUnscaledTime: 0
   autoRandomSeed: 1
   useRigidbodyForVelocity: 1
@@ -62797,8 +62920,8 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 15
-      minScalar: 5
+      scalar: 1.5
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -63342,13 +63465,13 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 4
-    angle: 49.532215
+    angle: 48.081764
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
     donutRadius: 0.2
-    m_Position: {x: 0, y: 0, z: 0}
-    m_Rotation: {x: 0, y: 0, z: 0}
+    m_Position: {x: 0.0000010338334, y: 8.216812, z: -4.948005}
+    m_Rotation: {x: 342.2624, y: 0, z: 0}
     m_Scale: {x: 1, y: 1, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
@@ -63428,7 +63551,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 29.461245
+      value: 8.220735
       mode: 0
       spread: 0
       speed:

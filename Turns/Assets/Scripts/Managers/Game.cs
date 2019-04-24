@@ -53,12 +53,18 @@ public class Game : Singleton<Game>
         Mathf.Lerp(fastestTilePassTime, initialTilePassTime, (MaxStage - CurrentStage) / (float) MaxStage);
     
     public bool StageFinishable =>
-        FloorManager.Instance.TilesPassed / TilesInStage > 0; 
+        FloorManager.Instance.TilesPassed / TilesInStage > 0;
 
-    public void Reset()
+    public float GameDuration => Time.fixedTime - _startTime;
+
+    public void Reset(bool continueLevel)
     {
-        MovesMade = 0;
-        PerfectPoints = 0;
+        if (!continueLevel)
+        {
+            MovesMade = 0;
+            PerfectPoints = 0;
+        }
+
         _lastInteractionMove = -10;
         _perfectChangeMove = -1;
         _perfectChangeBuffer = 1;
@@ -66,27 +72,31 @@ public class Game : Singleton<Game>
         StageFinished = false;
     }
 
-    public void Play()
+    public void ResetAndPlay(bool continueLevel)
     {
-        Reset();
+        Reset(continueLevel);
 
-        StartCoroutine(BeginAfterCountdown());
+        StartCoroutine(BeginAfterCountdown(continueLevel));
         IsStarted = true;
     }
     
-    public void ResetWorld()
+    public void ResetWorld(bool continueLevel)
     {
         Runner.Instance.Reset(); // need to be done before camera
-        CameraFollow.Instance.SetForMenu();
+        if (!continueLevel)
+        {
+            CameraFollow.Instance.SetForMenu();
+        }
+
         FloorManager.Instance.Reset();
         MomentsRecorderHelper.Instance.StopReplay();
     }
 
-    IEnumerator BeginAfterCountdown()
+    IEnumerator BeginAfterCountdown(bool continueLevel)
     {
         FloorManager.Instance.Play();
         Runner.Instance.Play();
-        CameraFollow.Instance.SetForGame();
+        CameraFollow.Instance.SetForGame(continueLevel);
         yield return new WaitForSeconds(0.6f);
         _startTime = Time.fixedTime;
     }
@@ -112,6 +122,11 @@ public class Game : Singleton<Game>
     public void OnRunnerPassTile()
     {
         Menu.Instance.UpdateUI();
+        if (Runner.Instance.State != Runner.RunnerState.Cinematic && Runner.Instance.State != Runner.RunnerState.EndCinematic)
+        {
+            Physics.gravity = DefaultGravity * 1 / TilePassTime;
+        }
+
     }
 
     public void OnRunnerPerfectChange()
@@ -134,31 +149,21 @@ public class Game : Singleton<Game>
 
     public void OnRunnerFallOver(Vector3Int? awayDirection = null)
     {
-       OnLevelFinished();
+        GameManager.Instance.LevelFailed();
     }
+
 
     public void OnRunnerJumpToWarp()
     {
         Menu.Instance.HideInGameMenu();
         Runner.Instance.Jump_EndLevel();
     }
-
+    
+    
     public void OnRunnerWarped()
     {
         StageFinished = true;
-        OnLevelFinished();
+        GameManager.Instance.LevelPassed();
     }
 
-    void OnLevelFinished()
-    {
-        GameManager.Instance.Player.SaveRun(
-            MovesMade,
-            Time.fixedTime - _startTime,
-            FloorManager.Instance.TilesPassed,
-            PerfectPoints,
-            StageFinished ? CurrentStage : GameManager.Instance.Player.MaxLevelPassed,
-            !StageFinished);
-
-        GameManager.Instance.LevelOver(StageFinished);
-    }
 }

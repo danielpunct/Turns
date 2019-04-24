@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class CameraFollow : Singleton<CameraFollow>
 {
+    public Transform cam;
     public Transform gamePivot;
     public Transform menuPivot;
     public Transform skinsPivot;   
     public Transform holderLeftRotationPivot;
     public Transform holderBackRotationPivot;
-    public GameObject endLevelPortalHolder;
-    public GameObject endLevelConfettiHolder;
-
-    public Transform cam;
-    
     public float followMultiplier = 4;
     public Transform player;
+    [Header("End level effects")]
+    public Transform endLevelEffectsOrientedHolder;
+    public GameObject endLevelPortalHolder;
+    public ParticleSystem endLevelConfettiHolder;
+    public AnimationCurve portalScaleCurve;
 
     Sequence _seq;
+    Sequence _seqReset;
     Transform _tr;
     bool endEffectDisplayed = false;
 
@@ -44,9 +46,8 @@ public class CameraFollow : Singleton<CameraFollow>
                         .Insert(0, _tr.DORotateQuaternion(FloorManager.Instance.CurrentDirection == VectorInt.back
                             ? holderBackRotationPivot.rotation
                             : holderLeftRotationPivot.rotation, 1f))
-                        .Insert(1, endLevelPortalHolder.transform.DOScale(1, 0.4f).SetEase(Ease.OutBack))
-                        .Insert(1.4f, endLevelPortalHolder.transform.DOScale(2, 10f))
-                        .InsertCallback(1.5f, () => Game.Instance.OnRunnerJumpToWarp());
+                        .Insert(1, endLevelPortalHolder.transform.DOScale(3f, 8f).SetEase(portalScaleCurve))
+                        .InsertCallback(2f, () => Game.Instance.OnRunnerJumpToWarp());
                 }
             }
         }
@@ -54,16 +55,32 @@ public class CameraFollow : Singleton<CameraFollow>
 
     public void ShowConfetti()
     {
-        endLevelConfettiHolder.SetActive(true);
+        endLevelConfettiHolder.Play();
     }
 
-    void Reset()
+    void Reset(bool continueLevel)
     {
-        _tr.DORotateQuaternion(Quaternion.identity, 0.5f);
-        endEffectDisplayed = false;
-        endLevelPortalHolder.SetActive(false);
-        endLevelConfettiHolder.SetActive(false);
-        endLevelPortalHolder.transform.localScale = Vector3.zero;
+        _tr.DORotateQuaternion(Quaternion.identity, 1f);
+        if (continueLevel)
+        {
+            _seqReset?.Kill();
+            _seqReset = DOTween.Sequence()
+                .Insert(0, endLevelEffectsOrientedHolder.DOLocalMoveZ(-15, 0.4f).SetEase(Ease.InCubic))
+                .InsertCallback(1, () =>
+                {
+                    endEffectDisplayed = false;
+                    endLevelPortalHolder.SetActive(false);
+                    endLevelPortalHolder.transform.localScale = Vector3.zero;
+                    endLevelEffectsOrientedHolder.localPosition = Vector3.zero;
+                });
+        }
+        else
+        {
+            endEffectDisplayed = false;
+            endLevelPortalHolder.SetActive(false);
+            endLevelPortalHolder.transform.localScale = Vector3.zero;
+            endLevelEffectsOrientedHolder.localPosition = Vector3.zero;
+        }
     }
 
     public void SetForMenu()
@@ -72,15 +89,15 @@ public class CameraFollow : Singleton<CameraFollow>
         _seq = DOTween.Sequence()
             .Insert(0, transform.DOMove(player.position, Runner.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
             .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
-        Reset();
+        Reset(false);
     }
 
-    public void SetForGame()
+    public void SetForGame(bool continueLevel)
     {
         _seq?.Kill();
         _seq = DOTween.Sequence()
             .Insert(0, cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
-        Reset();
+        Reset(continueLevel);
     }
 
     public void SetForSkins()
@@ -88,6 +105,6 @@ public class CameraFollow : Singleton<CameraFollow>
         _seq?.Kill();
         _seq = DOTween.Sequence()
             .Insert(0, cam.DOLocalMove(skinsPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
-        Reset();
+        Reset(false);
     }
 }
