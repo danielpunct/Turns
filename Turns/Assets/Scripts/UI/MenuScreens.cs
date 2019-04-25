@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuScreens : MonoBehaviour
 {
@@ -28,9 +29,12 @@ public class MenuScreens : MonoBehaviour
     [Header("game over")]
     public TMP_Text bestRunText;
     public TMP_Text yourRunText;
+    [Header("continue")] 
+    public Image timerBorder;
 
     Sequence _menuSeq;
     Sequence _skinsSeq;
+    Sequence _continueSeq;
 
     
     public void Show(MenuState state)
@@ -56,6 +60,7 @@ public class MenuScreens : MonoBehaviour
         switch (state)
         {
             case MenuState.init:
+                _continueSeq?.Kill();
                 buttonsUI._Reset();
                 buttonsUI.SwitchButtons(_menuSeq, 1, true, false);
                 _menuSeq
@@ -66,8 +71,10 @@ public class MenuScreens : MonoBehaviour
                 buttonsUI._Reset();
                 _menuSeq
                     .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.CaptureReplay());
+                StartContinueTimer();
                 break;
             case MenuState.gameOver:
+                _continueSeq?.Kill();
                 FloorManager.Instance._Reset();
                 buttonsUI._Reset();
                 buttonsUI.SwitchButtons(_menuSeq, 1, true, false);
@@ -90,14 +97,11 @@ public class MenuScreens : MonoBehaviour
         gameObject.SetActive(false);
         lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
 
+        _continueSeq?.Kill();
     }
     
-    public void ShitchSkinsUI(bool on)
+    public void OnSwitchSkinsButtonClick(bool on)
     {
-        _skinsSeq?.Kill();
-        _skinsSeq = DOTween.Sequence()
-            .Insert(0, skins.transform.DOLocalMoveX(on ? 0 : 1400, 0.1f));
-
         if (on)
         {
             elementsSkins.SetActive(true);
@@ -112,6 +116,21 @@ public class MenuScreens : MonoBehaviour
             buttonsUI.SwitchButtons(_menuSeq, 3, true, false);
             CameraFollow.Instance.SetForMenu();
         }
+        
+        _skinsSeq?.Kill();
+        _skinsSeq = DOTween.Sequence()
+            .Insert(0, skins.transform.DOLocalMoveX(on ? 0 : 1400, 0.1f));
+        
+    }
+
+    void StartContinueTimer()
+    {
+        var duration = 5;
+        timerBorder.fillAmount = 1;
+        _continueSeq?.Kill();
+        _continueSeq = DOTween.Sequence()
+            .Insert(0, timerBorder.DOFillAmount(0, duration).SetEase(Ease.Linear))
+            .InsertCallback(duration, () => Menu.Instance.OnNoThanksClick());
     }
     
 }
