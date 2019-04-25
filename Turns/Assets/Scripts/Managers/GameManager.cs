@@ -6,11 +6,18 @@ using UnityEngine;
 
 public class GameManager : Singleton<GameManager>
 {
-    public PlayerState Player;
+    public PlayerData Player;
 
+    public enum ContinueMode
+    {
+        levelPassed, 
+        levelRepeat,
+        startOver
+    }
+    
     void Awake()
     {
-        Player = new PlayerState();
+        Player = new PlayerData();
         Player.Load();
         Application.targetFrameRate = 60;
 
@@ -18,16 +25,15 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        Menu.Instance.ShowMenu(true);
-        Menu.Instance.UpdateUI();
+        Menu.Instance.OnStartApp();
+        Game.Instance.ResetWorld(ContinueMode.startOver);
     }
 
 
-    public void StartAnotherGame(bool continueLevel)
+    public void StartAnotherGame(ContinueMode mode)
     {
-        Game.Instance.ResetAndPlay(continueLevel);
-        Menu.Instance.ShowGameMenu();
-        Menu.Instance.UpdateUI();
+        Game.Instance.ResetWorld(mode);
+        Game.Instance.ResetAndPlay(mode);
     }
 
     public void LevelFailed()
@@ -36,18 +42,20 @@ public class GameManager : Singleton<GameManager>
             Game.Instance.MovesMade,
             Game.Instance.GameDuration,
             FloorManager.Instance.TilesPassed,
-            Game.Instance.PerfectPoints,
+            Game.Instance.Points,
             Game.Instance.CurrentStage - 1,
             true);
 
-        Menu.Instance.ShowMenu(false);
+        Menu.Instance.OnLevelFailed();
         Game.Instance.IsStarted = false;
     }
 
     public void LevelPassed()
     {
-        Game.Instance.ResetWorld(true);
-        StartAnotherGame(true);
+        Game.Instance.ResetWorld(ContinueMode.levelPassed);
+        Game.Instance.ResetAndPlay(ContinueMode.levelPassed);
+        
+        Menu.Instance.OnLevelWarped();
     }
     
 }

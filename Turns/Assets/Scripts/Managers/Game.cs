@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using Gamelogic.Extensions;
@@ -38,7 +39,11 @@ public class Game : Singleton<Game>
     public bool StageFinished { get; private set; }
     public int CurrentStage { get; private set; }
     
+    public int Points => PerfectPoints + MovesMade;
 
+
+    int _previousMovesMade;
+    int _previousPerfectPoints;
     int _lastInteractionMove = 0;
     float _startTime;
     int _perfectChangeMove = -1;
@@ -57,38 +62,56 @@ public class Game : Singleton<Game>
 
     public float GameDuration => Time.fixedTime - _startTime;
 
-    public void Reset(bool continueLevel)
+    public void ResetAndPlay(GameManager.ContinueMode mode)
     {
-        if (!continueLevel)
+        switch (mode)
         {
-            MovesMade = 0;
-            PerfectPoints = 0;
+            case GameManager.ContinueMode.levelPassed:
+                CurrentStage++;
+                _previousMovesMade = MovesMade;
+                _previousPerfectPoints = PerfectPoints;
+                break;
+            case GameManager.ContinueMode.levelRepeat:
+                MovesMade = _previousMovesMade;
+                PerfectPoints = _previousPerfectPoints;
+                break;
+            case GameManager.ContinueMode.startOver: 
+                MovesMade = 0;
+                PerfectPoints = 0;
+                _previousMovesMade = 0;
+                _previousPerfectPoints = 0;
+                CurrentStage = GameManager.Instance.Player.LevelSelected + 1;
+                break;
         }
 
         _lastInteractionMove = -10;
         _perfectChangeMove = -1;
         _perfectChangeBuffer = 1;
-        CurrentStage = GameManager.Instance.Player.LevelSelected + 1;
         StageFinished = false;
-    }
 
-    public void ResetAndPlay(bool continueLevel)
-    {
-        Reset(continueLevel);
-
-        StartCoroutine(BeginAfterCountdown(continueLevel));
+        StartCoroutine(BeginAfterCountdown(mode == GameManager.ContinueMode.levelPassed));
         IsStarted = true;
     }
     
-    public void ResetWorld(bool continueLevel)
+    public void ResetWorld(GameManager.ContinueMode mode)
     {
-        Runner.Instance.Reset(); // need to be done before camera
-        if (!continueLevel)
+        Runner.Instance._Reset(); // need to be done before camera
+        switch (mode)
         {
-            CameraFollow.Instance.SetForMenu();
+            case GameManager.ContinueMode.levelPassed:
+                break;
+            case GameManager.ContinueMode.levelRepeat:
+                CameraFollow.Instance.SetForGame(false);
+                break;
+            case GameManager.ContinueMode.startOver:
+                CameraFollow.Instance.SetForMenu();
+                break;
+        }
+        {
+           
         }
 
-        FloorManager.Instance.Reset();
+        FloorManager.Instance._Reset();
         MomentsRecorderHelper.Instance.StopReplay();
     }
 
@@ -121,7 +144,7 @@ public class Game : Singleton<Game>
 
     public void OnRunnerPassTile()
     {
-        Menu.Instance.UpdateUI();
+        Menu.Instance.OnTilePass();
         if (Runner.Instance.State != Runner.RunnerState.Cinematic && Runner.Instance.State != Runner.RunnerState.EndCinematic)
         {
             Physics.gravity = DefaultGravity * 1 / TilePassTime;
@@ -142,8 +165,7 @@ public class Game : Singleton<Game>
 
         _perfectChangeMove = MovesMade;
 
-//        Menu.Instance.comboUI.Show(perfectChangeBuffer + "x");
-        Menu.Instance.comboUI.Show($"+{_perfectChangeBuffer}");
+        Menu.Instance.gameUI.DisplayComboPoints(_perfectChangeBuffer);
         PerfectPoints += _perfectChangeBuffer;
     }
 
@@ -155,7 +177,7 @@ public class Game : Singleton<Game>
 
     public void OnRunnerJumpToWarp()
     {
-        Menu.Instance.HideInGameMenu();
+        Menu.Instance.OnLevelStartWarp();
         Runner.Instance.Jump_EndLevel();
     }
     

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PlayerState
+public class PlayerData
 {
    public int MaxMoves;
    public int LastMoves;

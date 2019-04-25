@@ -1,111 +1,106 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using DG.Tweening;
 using Gamelogic.Extensions;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class Menu : Singleton<Menu>
 {
     public ColorSuite cameraColorSuite;
     
-    [Header("Menu")] public GameObject menuUIHolder;
-    public GameObject defaultHolder;
-    public GameObject gameOverHolder;
-    public TMP_Text titleText;
-    public CanvasGroup lateHolder;
-    public GameObject elementsMain;
-    public GameObject elementsAfterDie;
-    public GameObject elementsSkins;
-    public CanvasGroup buttonHolder1;
-    public CanvasGroup buttonHolder2;
-    public CanvasGroup buttonHolder3;
-    public CanvasGroup buttonHolder4;
-    public Skins skins;
-    public GameObject skinButtonsHolder;
-    public TMP_Text bestRunText;
-    public TMP_Text yourRunText;
-    public TMP_Text lastMovesText;
-    public TMP_Text lastTimeText;
-
-    [Header("Game")] public GameObject gameUIHolder;
-    public Progress progressUI;
-    public ComboUI comboUI;
-    public CanvasGroup elementsLevelPassed;
-
-    Sequence _menuSeq;
-    Sequence _skinsSeq;
+    public MenuScreens menuUI;
+    public GameScreens gameUI;
+    
     Sequence _2ndMenuSeq;
 
-    void Start()
+    public void OnStartApp()
     {
-        ResetMenuUI();
+        ShowMenuScreen(MenuScreens.MenuState.init);
     }
-
-    void ResetMenuUI()
+    
+    public void OnTilePass()
     {
-        elementsSkins.SetActive(false);
-        lateHolder.gameObject.SetActive(true);
-        lateHolder.alpha = 0;
-        buttonHolder1.alpha = 0;
-        buttonHolder2.alpha = 0;
-        buttonHolder3.alpha = 0;
-        buttonHolder4.alpha = 0;
-
-        buttonHolder1.transform.DOLocalMoveY(-40, 0);
-        buttonHolder2.transform.DOLocalMoveY(-40, 0);
-        buttonHolder3.transform.DOLocalMoveY(-40, 0);
-        buttonHolder4.transform.DOLocalMoveY(-40, 0);
-        skins.transform.DOLocalMoveX(1400, 0);
-        titleText.DOFade(0, 0);
-        
-        skinButtonsHolder.SetActive(false);
-        bestRunText.text = "Best Score\n" + GameManager.Instance.Player.MaxPoints;
-        yourRunText.text =  GameManager.Instance.Player.LastPoints.ToString();
-    }
-
-    public void ShowMenu(bool init)
-    {
-        menuUIHolder.SetActive(true);
-        gameUIHolder.SetActive(false);
-
-        ResetMenuUI();
-
-        _menuSeq?.Kill();
-        _menuSeq = DOTween.Sequence()
-            .Insert(1, lateHolder.DOFade(1, 1f));
-        
-        defaultHolder.SetActive(init);
-        gameOverHolder.SetActive(!init);
-
-        if (init)
+        if (Game.Instance.IsStarted)
         {
-            elementsMain.SetActive(true);
-            elementsAfterDie.SetActive(false);
-            switchButtons(_menuSeq, 1, true, false);
-            Game.Instance.ResetWorld(false);
-            _menuSeq
-                .Insert(1, titleText.DOFade(1, 3))
-                .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
-        }
-        else// after endGame
-        {
-            lastTimeText.text = "Time: " + (int) GameManager.Instance.Player.RunningTime + " sec.";
-            lastMovesText.text = "Points: " + GameManager.Instance.Player.LastPoints;
-            StopCoroutine(SaturateImage(1));
-            StartCoroutine(SaturateImage(0));
-            elementsMain.SetActive(false);
-            elementsAfterDie.SetActive(true);
-
-            _menuSeq
-                .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.CaptureReplay())
-                .InsertCallback(1f, () => MomentsRecorderHelper.Instance.StartPlayback());
-
+            gameUI.UpdateState();
         }
     }
 
+    public void OnLevelFailed()
+    {
+        ShowMenuScreen(MenuScreens.MenuState.continueRun);
+    }
+
+    public void OnLevelStartWarp()
+    {
+        ShowGameScreen(GameScreens.GameState.levelTransition);
+    }
+    
+    public void OnLevelWarped()
+    {
+        ShowGameScreen(GameScreens.GameState.play);
+    }
+
+    public void OnDefaultPlayClick()
+    {
+        GameManager.Instance.StartAnotherGame(GameManager.ContinueMode.startOver);
+        ShowGameScreen(GameScreens.GameState.play);
+    }
+    
+    public void OnNoThanksClick()
+    {
+        ShowMenuScreen(MenuScreens.MenuState.gameOver);
+    }
+
+
+    public void OnContinueClick()
+    {
+        GameManager.Instance.StartAnotherGame(GameManager.ContinueMode.levelRepeat);
+        ShowGameScreen(GameScreens.GameState.play);
+    }
+
+    public void OnGameOverConfirmClick()
+    {
+        GameManager.Instance.StartAnotherGame(GameManager.ContinueMode.startOver);
+        ShowGameScreen(GameScreens.GameState.play);
+    }
+
+    
+    void ShowMenuScreen(MenuScreens.MenuState state)
+    {
+        gameUI.Hide();
+        menuUI.Show(state);
+
+        StopCoroutine(SaturateImage(1));
+        StopCoroutine(SaturateImage(0));
+        
+        switch (state)
+        {
+            case MenuScreens.MenuState.init:
+                StartCoroutine(SaturateImage(1));
+                break;
+            case MenuScreens.MenuState.home:
+                StartCoroutine(SaturateImage(1));
+                break;
+            case MenuScreens.MenuState.continueRun:
+                StartCoroutine(SaturateImage(0));
+                break;
+            case MenuScreens.MenuState.gameOver:
+                StartCoroutine(SaturateImage(1));
+                break;
+        }
+    }
+
+    void ShowGameScreen(GameScreens.GameState state)
+    {
+        gameUI.Show(state);
+        menuUI.Hide();
+        
+        StopCoroutine(SaturateImage(1));
+        StopCoroutine(SaturateImage(0));
+        
+        StartCoroutine(SaturateImage(1));
+    }
+    
     IEnumerator SaturateImage(float endValue)
     {
         yield return null;
@@ -115,107 +110,5 @@ public class Menu : Singleton<Menu>
             cameraColorSuite.saturation = Mathf.Lerp(init, endValue, i / 20f);
             yield return null;
         }
-    }
-
-    public void OnEndMachConfirmClick()
-    {
-        StopCoroutine(SaturateImage(1));
-        StartCoroutine(SaturateImage(1));
-        elementsMain.SetActive(true);
-        elementsAfterDie.SetActive(false);
-        switchButtons(_menuSeq, 1, true, false);
-        Game.Instance.ResetWorld(false);
-        _2ndMenuSeq?.Kill();
-        _2ndMenuSeq = DOTween.Sequence() 
-            .Insert(0, titleText.DOFade(1, 3))
-            .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
-    }
-
-    public void ShowGameMenu()
-    {
-        menuUIHolder.SetActive(false);
-        gameUIHolder.SetActive(true);
-        elementsLevelPassed.gameObject.SetActive(false);
-        progressUI.transform.DOLocalMoveY(0, 0);
-        MomentsRecorderHelper.Instance.ResetRecording();
-        lateHolder.DOFade(0, 0.4f).OnComplete(() => { lateHolder.gameObject.SetActive(false); });
-        
-        comboUI.Hide();
-    }
-
-    public void OnPlayClick()
-    {
-        _menuSeq?.Kill();
-        Game.Instance.ResetWorld(false);
-        GameManager.Instance.StartAnotherGame(false);
-    }
-
-    public void UpdateUI()
-    {
-        if (Game.Instance.IsStarted)
-        {
-            progressUI.Display();
-        }
-    }
-
-
-    public void ShitchSkinsUI(bool on)
-    {
-        _skinsSeq?.Kill();
-        _skinsSeq = DOTween.Sequence()
-            .Insert(0, skins.transform.DOLocalMoveX(on ? 0 : 1400, 0.1f));
-
-        if (on)
-        {
-            elementsSkins.SetActive(true);
-            elementsMain.SetActive(false);
-            switchButtons(_skinsSeq, 0, false, true);
-            CameraFollow.Instance.SetForSkins();
-        }
-        else
-        {
-            elementsSkins.SetActive(false);
-            elementsMain.SetActive(true);
-            switchButtons(_menuSeq, 3, true, false);
-            CameraFollow.Instance.SetForMenu();
-        }
-    }
-
-    void switchButtons(Sequence seq, float offset, bool on, bool farther)
-    {
-        const float buttonsDuration = 0.35f;
-        var eachOffset = on ? 0.07f : 0;
-        var fadeoffset = on ? 0 : buttonsDuration / 2f;
-
-        seq.Insert(offset + fadeoffset + eachOffset * 0.5f * 0, buttonHolder1.DOFade(on ? 1 : 0, buttonsDuration))
-            .Insert(offset + fadeoffset + eachOffset * 0.5f * 1, buttonHolder2.DOFade(on ? 1 : 0, buttonsDuration))
-            .Insert(offset + fadeoffset + eachOffset * 0.5f * 2, buttonHolder3.DOFade(on ? 1 : 0, buttonsDuration))
-            .Insert(offset + fadeoffset + eachOffset * 0.5f * 3, buttonHolder4.DOFade(on ? 1 : 0, buttonsDuration))
-            .Insert(offset + eachOffset * 0,
-                buttonHolder1.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
-                    .SetEase(Ease.OutBack))
-            .Insert(offset + eachOffset * 1,
-                buttonHolder2.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
-                    .SetEase(Ease.OutBack))
-            .Insert(offset + eachOffset * 2,
-                buttonHolder3.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
-                    .SetEase(Ease.OutBack))
-            .Insert(offset + eachOffset * 3,
-                buttonHolder4.transform.DOLocalMoveY(on ? 0 : (farther ? -530 : -40), buttonsDuration)
-                    .SetEase(Ease.OutBack));
-    }
-
-    public void HideInGameMenu()
-    {
-        _menuSeq?.Kill();
-        _menuSeq = DOTween.Sequence()
-            .Insert(0, progressUI.transform.DOLocalMoveY(500, 1));
-    }
-
-    public void ShowLevelPassedMenu()
-    {
-        elementsLevelPassed.alpha = 0;
-        elementsLevelPassed.gameObject.SetActive(true);
-        elementsLevelPassed.DOFade(1, 1);
     }
 }

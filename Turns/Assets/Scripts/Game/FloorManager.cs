@@ -25,7 +25,7 @@ public class FloorManager : Singleton<FloorManager>
     int _nextStairsBuffer = 0;
     bool _nextStairDirectionUp;
 
-    public void Reset()
+    public void _Reset()
     {
         _passTileBuffer = Game.Instance.PlayerPassTilesBuffer;
         _nextTilePosition = Vector3Int.zero;

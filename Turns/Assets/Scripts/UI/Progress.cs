@@ -12,7 +12,7 @@ public class Progress : MonoBehaviour
 
     Tween _t;
 
-    public void Display()
+    public void UpdateState()
     {
         currentLevel.text = (Game.Instance.CurrentStage).ToString();
         nextLevel.text = (Game.Instance.CurrentStage + 1).ToString();
@@ -22,6 +22,6 @@ public class Progress : MonoBehaviour
         
         _t?.Kill();
         _t = progressSlider.DOValue(newValue, newValue > 0 ? 0.3f : 0);
-        pointsText.text = (Game.Instance.PerfectPoints + Game.Instance.MovesMade).ToString();
+        pointsText.text = (Game.Instance.Points).ToString();
     }
 }

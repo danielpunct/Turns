@@ -97,7 +97,7 @@ public class Runner : Singleton<Runner>
         _currentModel = model;
     }
 
-    public void Reset()
+    public void _Reset()
     {
         gameObject.SetActive(true);
         State = RunnerState.Cinematic;
