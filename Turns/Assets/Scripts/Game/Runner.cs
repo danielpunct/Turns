@@ -130,7 +130,7 @@ public class Runner : Singleton<Runner>
 
         _seq = DOTween.Sequence()
             .Insert(0f, _tr.DOScale(1, 0.2f).SetEase(Ease.OutBack))
-            .InsertCallback(0.40f, ShowParticles_Land)
+            .InsertCallback(0.5f, ShowParticles_Land)
             .InsertCallback(1f, () =>
             {
                 State = RunnerState.Running;
@@ -200,8 +200,11 @@ public class Runner : Singleton<Runner>
             {
                 gameObject.SetActive(false);
                 CameraFollow.Instance.ShowConfetti(); 
+            })
+            .InsertCallback(1.7f, () =>
+            {
                 Game.Instance.OnRunnerWarped(); 
-            });
+            });;
 
         Physics.gravity = Game.Instance.DefaultGravity;
         _rb.AddForce(-Game.Instance.DefaultGravity * 12);

@@ -41,6 +41,8 @@ public class Game : Singleton<Game>
     
     public int Points => PerfectPoints + MovesMade;
 
+    public bool SkipContinue => CurrentStage <= 1;
+
 
     int _previousMovesMade;
     int _previousPerfectPoints;

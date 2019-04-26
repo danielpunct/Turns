@@ -29,8 +29,11 @@ public class MenuScreens : MonoBehaviour
     [Header("game over")]
     public TMP_Text bestRunText;
     public TMP_Text yourRunText;
+    public Transform replayHolder;
     [Header("continue")] 
     public Image timerBorder;
+    public Transform continueButtonHolder;
+    public Transform continueTextHolder;
 
     Sequence _menuSeq;
     Sequence _skinsSeq;
@@ -69,19 +72,40 @@ public class MenuScreens : MonoBehaviour
                 break;
             case MenuState.continueRun:
                 buttonsUI._Reset();
+
+                continueButtonHolder.localScale = Vector3.zero;
+                continueTextHolder.localScale  = Vector3.one;
+                
                 _menuSeq
-                    .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.CaptureReplay());
+                    .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.CaptureReplay())
+                    .Insert(0, continueButtonHolder.DOScale(1, 0.8f) )
+                    .Insert(0.5f, continueTextHolder.DOScale(1.15f, 0.5f).SetLoops(2, LoopType.Yoyo));
                 StartContinueTimer();
                 break;
             case MenuState.gameOver:
                 _continueSeq?.Kill();
-                FloorManager.Instance._Reset();
                 buttonsUI._Reset();
                 buttonsUI.SwitchButtons(_menuSeq, 1, true, false);
                 bestRunText.text = "Best Score\n" + GameManager.Instance.Player.MaxPoints;
                 yourRunText.text =  GameManager.Instance.Player.LastPoints.ToString();
+
+                if (Game.Instance.SkipContinue)
+                {
+                    _menuSeq
+                        .InsertCallback(0.5f, () =>
+                        {
+                            MomentsRecorderHelper.Instance.CaptureReplay();
+                            FloorManager.Instance._Reset();
+                        });
+                }
+                else
+                {
+                    FloorManager.Instance._Reset();
+                }
+
                 _menuSeq
-                    .InsertCallback(1f, () => MomentsRecorderHelper.Instance.StartPlayback());
+                    .InsertCallback(0.5f, () => MomentsRecorderHelper.Instance.StartPlayback())
+                    .Insert(2f, replayHolder.DOPunchRotation(new Vector3(0, 0, 22), 0.8f, 10, 1));
                 break;
             case MenuState.home:
                 _menuSeq

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraFollow : Singleton<CameraFollow>
 {
-    public Transform cam;
+    public Camera cam;
     public Transform gamePivot;
     public Transform menuPivot;
     public Transform skinsPivot;   
@@ -17,11 +17,12 @@ public class CameraFollow : Singleton<CameraFollow>
     public GameObject endLevelPortalHolder;
     public ParticleSystem endLevelConfettiHolder;
     public AnimationCurve portalScaleCurve;
+    public AnimationCurve cameraViewCurve;
 
     Sequence _seq;
     Sequence _seqReset;
     Transform _tr;
-    bool endEffectDisplayed = false;
+    bool _endEffectDisplayed = false;
 
     void Awake()
     {
@@ -37,10 +38,10 @@ public class CameraFollow : Singleton<CameraFollow>
 
             if (Runner.Instance.IsWinWalking)
             {
-                if (!endEffectDisplayed)
+                if (!_endEffectDisplayed)
                 {
                     endLevelPortalHolder.SetActive(true);
-                    endEffectDisplayed = true;
+                    _endEffectDisplayed = true;
                     _seq?.Kill();
                     _seq = DOTween.Sequence()
                         .Insert(0, _tr.DORotateQuaternion(FloorManager.Instance.CurrentDirection == VectorInt.back
@@ -56,6 +57,7 @@ public class CameraFollow : Singleton<CameraFollow>
     public void ShowConfetti()
     {
         endLevelConfettiHolder.Play();
+        cam.DOFieldOfView(60, 1.4f).SetEase(cameraViewCurve);
     }
 
     void Reset(bool continueLevel)
@@ -65,10 +67,10 @@ public class CameraFollow : Singleton<CameraFollow>
         {
             _seqReset?.Kill();
             _seqReset = DOTween.Sequence()
-                .Insert(0, endLevelEffectsOrientedHolder.DOLocalMoveZ(-15, 0.4f).SetEase(Ease.InCubic))
+                .Insert(0, endLevelEffectsOrientedHolder.DOLocalMoveZ(-15, 0.5f).SetEase(Ease.InCubic))
                 .InsertCallback(1, () =>
                 {
-                    endEffectDisplayed = false;
+                    _endEffectDisplayed = false;
                     endLevelPortalHolder.SetActive(false);
                     endLevelPortalHolder.transform.localScale = Vector3.zero;
                     endLevelEffectsOrientedHolder.localPosition = Vector3.zero;
@@ -76,7 +78,7 @@ public class CameraFollow : Singleton<CameraFollow>
         }
         else
         {
-            endEffectDisplayed = false;
+            _endEffectDisplayed = false;
             endLevelPortalHolder.SetActive(false);
             endLevelPortalHolder.transform.localScale = Vector3.zero;
             endLevelEffectsOrientedHolder.localPosition = Vector3.zero;
@@ -88,7 +90,7 @@ public class CameraFollow : Singleton<CameraFollow>
         _seq?.Kill();
         _seq = DOTween.Sequence()
             .Insert(0, transform.DOMove(player.position, Runner.Instance.playerPresentOffset).SetEase(Ease.OutExpo))
-            .Insert(0, cam.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+            .Insert(0, cam.transform.DOLocalMove(menuPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
         Reset(false);
     }
 
@@ -96,7 +98,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         _seq?.Kill();
         _seq = DOTween.Sequence()
-            .Insert(0, cam.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+            .Insert(0, cam.transform.DOLocalMove(gamePivot.localPosition, 0.5f).SetEase(Ease.OutBack));
         Reset(continueLevel);
     }
 
@@ -104,7 +106,7 @@ public class CameraFollow : Singleton<CameraFollow>
     {
         _seq?.Kill();
         _seq = DOTween.Sequence()
-            .Insert(0, cam.DOLocalMove(skinsPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
+            .Insert(0, cam.transform.DOLocalMove(skinsPivot.localPosition, 0.5f).SetEase(Ease.OutBack));
         Reset(false);
     }
 }

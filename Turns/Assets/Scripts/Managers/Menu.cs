@@ -27,7 +27,14 @@ public class Menu : Singleton<Menu>
 
     public void OnLevelFailed()
     {
-        ShowMenuScreen(MenuScreens.MenuState.continueRun);
+        if (Game.Instance.SkipContinue)
+        {
+            ShowMenuScreen(MenuScreens.MenuState.gameOver);
+        }
+        else
+        {
+            ShowMenuScreen(MenuScreens.MenuState.continueRun);
+        }
     }
 
     public void OnLevelStartWarp()
