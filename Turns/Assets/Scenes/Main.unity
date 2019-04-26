@@ -515,7 +515,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 40.6
+  m_fontSize: 38.5
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12394,7 +12394,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 43.5
+  m_fontSize: 44.7
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -23443,7 +23443,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 108
+  m_fontSize: 102.3
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -30001,7 +30001,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 55.8
+  m_fontSize: 52.85
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -33776,6 +33776,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1490351646}
+  - component: {fileID: 1490351647}
   m_Layer: 5
   m_Name: replay - holder
   m_TagString: Untagged
@@ -33803,8 +33804,22 @@ RectTransform:
   m_AnchorMin: {x: 0.18200001, y: 0.7045066}
   m_AnchorMax: {x: 0.3703849, y: 0.9294935}
   m_AnchoredPosition: {x: 1, y: 0}
-  m_SizeDelta: {x: 190, y: 284}
+  m_SizeDelta: {x: 190, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1490351647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1490351645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1254083943, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 0.5173323
 --- !u!1 &1499431158
 GameObject:
   m_ObjectHideFlags: 0

@@ -152,7 +152,7 @@ public class MenuScreens : MonoBehaviour
 
     void StartContinueTimer()
     {
-        var duration = 5;
+        const int duration = 5;
         timerBorder.fillAmount = 1;
         _continueSeq?.Kill();
         _continueSeq = DOTween.Sequence()
