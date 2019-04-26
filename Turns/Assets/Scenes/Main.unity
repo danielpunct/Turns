@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   __messageText: 
-  cam: {fileID: 534669905}
+  cam: {fileID: 534669904}
   gamePivot: {fileID: 977873628}
   menuPivot: {fileID: 2011040580}
   skinsPivot: {fileID: 440791497}
@@ -239,26 +239,35 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 3.1647506
-      outSlope: 3.1647506
+      inSlope: 2.825432
+      outSlope: 2.825432
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.31770432
-      value: 1.0054549
-      inSlope: -0.7514937
-      outSlope: -0.7514937
+      time: 0.34663767
+      value: 0.9794012
+      inSlope: -0.21512449
+      outSlope: -0.21512449
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5891992
-      value: -0.26181197
-      inSlope: -2.0167592
-      outSlope: -2.0167592
+      time: 0.6853801
+      value: -0.12343609
+      inSlope: -0.96139365
+      outSlope: -0.96139365
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.79592526
+      value: 0.023908854
+      inSlope: 0.6047465
+      outSlope: 0.6047465
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -266,8 +275,8 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: -0.0012741089
-      inSlope: 0.63421947
-      outSlope: 0.63421947
+      inSlope: -0.12340068
+      outSlope: -0.12340068
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

@@ -13,7 +13,8 @@ public class MenuScreens : MonoBehaviour
         init,
         home,
         continueRun,
-        gameOver
+        gameOver,
+        skins,
     };
     
     public GameObject defaultHolder;
@@ -112,6 +113,8 @@ public class MenuScreens : MonoBehaviour
                     .Insert(1, titleText.DOFade(1, 3))
                     .InsertCallback(Runner.Instance.playerPresentOffset, () => { skinButtonsHolder.SetActive(true); });
                 break;
+            case MenuState.skins:
+                break;
         }
         
     }
@@ -128,15 +131,15 @@ public class MenuScreens : MonoBehaviour
     {
         if (on)
         {
+            Show(MenuState.skins);
             elementsSkins.SetActive(true);
-//            elementsMain.SetActive(false);
             buttonsUI.SwitchButtons(_skinsSeq, 0, false, true);
             CameraFollow.Instance.SetForSkins();
         }
         else
         {
+            Show(MenuState.init);
             elementsSkins.SetActive(false);
-//            elementsMain.SetActive(true);
             buttonsUI.SwitchButtons(_menuSeq, 3, true, false);
             CameraFollow.Instance.SetForMenu();
         }
